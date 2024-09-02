@@ -7,7 +7,7 @@ import Source_Manager.SourceManagerImpl;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-public class MainController {
+public class Main {
 
     public static void main( String[] args ){
         try{

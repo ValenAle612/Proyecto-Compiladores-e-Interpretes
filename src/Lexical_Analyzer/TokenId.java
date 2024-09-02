@@ -27,6 +27,9 @@ public enum TokenId {
         //Punctuation Symbols
         ps_openParenthesis, ps_closeParenthesis,
         ps_openBrace, ps_closeBrace,
-        ps_semicolon, ps_comma, ps_dot, ps_colon
+        ps_semicolon, ps_comma, ps_dot, ps_colon,
+
+        //token for testing
+        initializing_token
 
 }

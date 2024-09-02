@@ -12,6 +12,7 @@ public class MainController {
     public static void main( String[] args ){
         try{
             String inputFile = args[0];
+            boolean errors = false;
 
             if( args.length > 2 ){
                 System.out.println("Incorrect number of parameters");
@@ -22,14 +23,27 @@ public class MainController {
                     sourceManager.open(inputFile);
                     LexicalAnalyzer lexicalAnalyzer = new LexicalAnalyzer(sourceManager);
 
-                    System.out.println("Lexical analysis completed succesfully");
+                    Token token = new Token(TokenId.initializing_token, "", 0);
+
+                    do{
+
+                        try{
+                            token = lexicalAnalyzer.nextToken();
+                            System.out.println("(" + token.getTokenType() + ", " + token.getLexeme() + ", " + token.getLineNumber() + ")\n");//(tokenId, lexeme, line number)
+                        } catch ( LexicalException e ){
+                            errors = true;
+                            System.out.println( e.getMessage() );
+                        }
+
+                    }while( token.getTokenType() != TokenId.EOF );
+
+                    if(!errors)
+                        System.out.println( "[SinErrores]" );
 
                 }catch ( FileNotFoundException e ){
                     System.out.println("ERROR: file not found");
                 }catch ( IOException e ){
                     e.printStackTrace();
-                } catch ( LexicalException e ){
-                    System.out.println( e.getMessage() );
                 }
 
             }

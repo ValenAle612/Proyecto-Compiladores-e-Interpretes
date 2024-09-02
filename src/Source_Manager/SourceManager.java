@@ -1,4 +1,4 @@
-package sourcemanager;
+package Source_Manager;
 //Author: Juan Dingevan
 
 import java.io.FileNotFoundException;
@@ -11,7 +11,13 @@ public interface SourceManager {
 
     char getNextChar() throws IOException;
 
+    String getPreviousLine();
+
     int getLineNumber();
+
+    int getColumnNumber();
+
+    boolean isEndOfFile(char character);
 
     public static final char END_OF_FILE = (char) 26;
 }

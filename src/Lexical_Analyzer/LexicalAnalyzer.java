@@ -37,6 +37,7 @@ public class LexicalAnalyzer {
 
         if( Character.isWhitespace(currentChar) ){
             updateCurrentChar();
+
             return initial_state();
         } else if ( Character.isUpperCase(currentChar) ){
             updateLexeme();
@@ -481,7 +482,7 @@ public class LexicalAnalyzer {
             updateCurrentChar();
             return new Token(TokenId.literal_String, lexeme, sourceManager.getLineNumber());
         } else if( currentChar == '\n' || sourceManager.isEndOfFile( currentChar )  )
-            throw new LexicalException( lexeme, sourceManager.getLineNumber(), sourceManager.getColumnNumber(), "poorly closed String", sourceManager.getPreviousLine());
+            throw new LexicalException(lexeme, sourceManager.getLineNumber(), (sourceManager.getColumnNumber() - lexeme.length() + 1), "poorly closed String", sourceManager.getPreviousLine());
         else {
             updateLexeme();
             updateCurrentChar();

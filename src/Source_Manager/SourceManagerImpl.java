@@ -38,8 +38,8 @@ public class SourceManagerImpl implements SourceManager{
         char currentChar = ' ';
 
         if(mustReadNextLine) {
-            previousLine = currentLine;
             currentLine = reader.readLine();
+            previousLine = currentLine;
             lineNumber++;
             lineIndexNumber = 0;
             mustReadNextLine = false;
@@ -48,6 +48,7 @@ public class SourceManagerImpl implements SourceManager{
         if(lineIndexNumber < currentLine.length()) {
             currentChar = currentLine.charAt(lineIndexNumber);
             lineIndexNumber++;
+            columnNumber = lineIndexNumber;
         } else if (reader.ready()) {
             currentChar = '\n';
             mustReadNextLine = true;

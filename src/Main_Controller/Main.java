@@ -28,11 +28,15 @@ public class Main {
                     do{
 
                         try{
+
                             token = lexicalAnalyzer.nextToken();
-                            System.out.println("(" + token.getTokenType() + ", " + token.getLexeme() + ", " + token.getLineNumber() + ")\n");//(tokenId, lexeme, line number)
+                            if (token.getTokenType() != TokenId.EOF)
+                                System.out.println("(" + token.getTokenType() + ", " + token.getLexeme() + ", " + token.getLineNumber() + ")\n");//(tokenId, lexeme, line number)
+
                         } catch ( LexicalException e ){
                             errors = true;
                             System.out.println( e.getMessage() );
+                            lexicalAnalyzer.updateCurrentChar();
                         }
 
                     }while( token.getTokenType() != TokenId.EOF );

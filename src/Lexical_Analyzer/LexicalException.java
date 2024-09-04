@@ -25,7 +25,7 @@ public class LexicalException extends Exception{
         String pointer = "";
 
         //moves the pointer to the exact position of the error
-        for (int i = 0; i < detail.length() + (columnNumber - 1); i++) {
+        for (int i = 0; i < detail.length() + columnNumber - 1; i++) {
             if (completeMessage.charAt(i) == '\t')
                 pointer += '\t';
             else pointer += ' ';
@@ -33,8 +33,9 @@ public class LexicalException extends Exception{
 
         pointer += '^';
 
-        return "Lexical error at line " + lineNumber + ": " + message +"\n"+
-                "Detail: " + detail + "\n" +
+        return "Lexical error at line " + lineNumber + ": " + message +
+                " starting at column " + columnNumber + "\n" +
+                completeMessage + "\n" +
                 pointer + "\n" +
                 "[Error:" + lexeme + "|" + lineNumber + "] \n";
     }

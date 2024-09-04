@@ -5,7 +5,7 @@ public enum TokenId {
         kw_class, kw_extends, kw_public, kw_static, kw_void,
         kw_boolean, kw_char, kw_int,
         kw_if, kw_else, kw_while, kw_return, kw_var,
-        kw_switch, kw_case, kw_brake,
+        kw_switch, kw_case, kw_break,
         kw_this, kw_new, kw_null, kw_true, kw_false,
 
         //Operators
@@ -29,7 +29,7 @@ public enum TokenId {
         ps_openBrace, ps_closeBrace,
         ps_semicolon, ps_comma, ps_dot, ps_colon,
 
-        //token for testing
-        initializing_token
+        //just for initialize the token
+        initializer_token
 
 }

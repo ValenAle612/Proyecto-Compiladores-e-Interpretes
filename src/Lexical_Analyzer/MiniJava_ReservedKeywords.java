@@ -35,7 +35,7 @@ public class MiniJava_ReservedKeywords {
 
         dictionary.put("switch", TokenId.kw_switch);
         dictionary.put("case", TokenId.kw_case);
-        dictionary.put("brake", TokenId.kw_brake);
+        dictionary.put("brake", TokenId.kw_break);
 
         dictionary.put("this", TokenId.kw_this);
         dictionary.put("new", TokenId.kw_new);

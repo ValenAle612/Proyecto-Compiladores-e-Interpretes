@@ -210,7 +210,7 @@ public class LexicalAnalyzer {
             updateLexeme();
             updateCurrentChar();
 
-            return character_state();
+            return character_state2();
         }
     }
 
@@ -368,7 +368,9 @@ public class LexicalAnalyzer {
         return new Token( TokenId.op_assignmentSubstraction, lexeme, sourceManager.getLineNumber() );
     }
 
-    private Token multiply_state(){
+    private Token multiply_state() throws LexicalException, IOException {
+        if(currentChar == '/')
+            throw new LexicalException(lexeme, sourceManager.getLineNumber(), sourceManager.getColumnNumber(), "multiline comment without init -> Unterminated multiline comment", sourceManager.getPreviousLine());
         return new Token( TokenId.op_multiply, lexeme, sourceManager.getLineNumber() );
     }
 

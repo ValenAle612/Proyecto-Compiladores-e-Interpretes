@@ -23,7 +23,7 @@ public class Main {
                     sourceManager.open(inputFile);
                     LexicalAnalyzer lexicalAnalyzer = new LexicalAnalyzer(sourceManager);
 
-                    Token token = new Token(TokenId.initializing_token, "", 0);
+                    Token token = new Token(TokenId.initializer_token, "", 0);
 
                     do{
 

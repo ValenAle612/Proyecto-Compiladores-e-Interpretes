@@ -186,7 +186,7 @@ public class LexicalAnalyzer {
         }else{
             TokenId tokenId = reservedKeywords.getTokenId(lexeme);
             if( tokenId == null )
-                return new Token( TokenId.method_id, lexeme, sourceManager.getLineNumber() );
+                return new Token( TokenId.method_var_id, lexeme, sourceManager.getLineNumber() );
             else
                 return new Token( tokenId, lexeme, sourceManager.getLineNumber() );
         }

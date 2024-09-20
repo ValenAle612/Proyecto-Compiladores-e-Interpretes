@@ -22,7 +22,7 @@ public enum TokenId {
         literal_integer, literal_char, literal_String,
 
         //Identifiers
-        class_id, method_id,
+        class_id, method_var_id,
 
         //Punctuation Symbols
         ps_openParenthesis, ps_closeParenthesis,

@@ -1,5 +1,8 @@
+package minijavaCompiler;
+
 import java.io.*;
 import java.util.ArrayList;
+
 import Main_Controller.Main;
 import org.hamcrest.CoreMatchers;
 import org.junit.After;
@@ -12,7 +15,8 @@ import org.junit.runners.Parameterized.Parameters;
 
 @RunWith(Parameterized.class)
 public class TesterDeCasosConErrores {
-
+    
+    //TODO: el tipo de esta variable init tiene que ser la clase que tiene el main
     private static final Main init = null;
     
     private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();

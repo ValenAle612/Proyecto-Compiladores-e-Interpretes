@@ -3,6 +3,8 @@ package Main_Controller;
 import Lexical_Analyzer.*;
 import Source_Manager.SourceManager;
 import Source_Manager.SourceManagerImpl;
+import Syntax_Analyzer.SyntaxAnalyzer;
+import Syntax_Analyzer.SyntaxException;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -22,34 +24,20 @@ public class Main {
                     SourceManager sourceManager = new SourceManagerImpl();
                     sourceManager.open(inputFile);
                     LexicalAnalyzer lexicalAnalyzer = new LexicalAnalyzer(sourceManager);
+                    SyntaxAnalyzer syntaxAnalyzer = new SyntaxAnalyzer(lexicalAnalyzer);
 
                     Token token = new Token(TokenId.initializer_token, "", 0);
 
-                    do{
-
-                        try{
-
-                            token = lexicalAnalyzer.nextToken();
-                            if (token.getTokenType() != TokenId.EOF)
-                                System.out.println("(" + token.getTokenType() + ", " + token.getLexeme() + ", " + token.getLineNumber() + ")\n");//(tokenId, lexeme, line number)
-
-                        } catch ( LexicalException e ){
-                            errors = true;
-                            System.out.println( e.getMessage() );
-                            lexicalAnalyzer.updateCurrentChar();
-                        }
-
-                    }while( token.getTokenType() != TokenId.EOF );
-
                     if(!errors)
-                        System.out.println( "[SinErrores]" );
+                        System.out.println( "Successful build\n \n[SinErrores]" );
 
                 }catch ( FileNotFoundException e ){
                     System.out.println("ERROR: file not found");
                 }catch ( IOException e ){
                     e.printStackTrace();
+                } catch (LexicalException | SyntaxException e) {
+                    System.out.println(e.getMessage());
                 }
-
             }
         }catch( ArrayIndexOutOfBoundsException e ){
             System.out.println(" ERROR: file name not specified or incorrect number of parameters ");

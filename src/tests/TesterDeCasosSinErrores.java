@@ -1,8 +1,10 @@
+package minijavaCompiler;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.PrintStream;
 import java.util.ArrayList;
-import Main_Controller.Main;
+
 import org.hamcrest.CoreMatchers;
 import org.junit.After;
 import org.junit.Test;
@@ -19,6 +21,8 @@ public class TesterDeCasosSinErrores {
 
     private static final String msgExito = "[SinErrores]";
     private static final String testFilesDirectoryPath = "resources/sinErrores/";
+
+    //TODO: el tipo de esta variable init tiene que ser la clase que tiene el main
     private static final Main init = null;
    
     private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
@@ -53,14 +57,16 @@ public class TesterDeCasosSinErrores {
     public TesterDeCasosSinErrores(String input){
         this.input = input;
     }
+
+       
         
     @Test
-    public void testIterado() throws Exception {
+    public void testIterado() {
         probarExito(input);
     }
 
      
-    void probarExito(String name) {
+    void probarExito(String name){
             String path = testFilesDirectoryPath+name;
             String[] args = {path};
             init.main(args);

@@ -14,10 +14,9 @@ public class SyntaxAnalyzer {
     LexicalAnalyzer lexicalAnalyzer;
     Token currentToken;
     private String currentClassName;
-    private boolean possibly_builder = false;
+    private boolean possibly_a_builder = false;
 
     private final Set<TokenId> class_tokens = new HashSet<>(Set.of(TokenId.kw_class));
-    private final Set<TokenId> attribute_tokens = new HashSet<>(Set.of(TokenId.kw_int, TokenId.kw_char, TokenId.kw_boolean, TokenId.class_id));
     private final Set<TokenId> primitiveType_tokens = new HashSet<>(Set.of(TokenId.kw_void, TokenId.kw_int,
                                                                             TokenId.kw_char, TokenId.kw_boolean));
     private final Set<TokenId> statement_tokens = new HashSet<>(Set.of(TokenId.ps_semicolon, TokenId.kw_this,
@@ -49,7 +48,8 @@ public class SyntaxAnalyzer {
     private final Set<TokenId> binaryOperator_tokens = new HashSet<>(Set.of(TokenId.op_or, TokenId.op_and, TokenId.op_equals,
                                                                             TokenId.op_notEquals, TokenId.op_lessThan,
                                                                             TokenId.op_greaterThan, TokenId.op_lessThanEqual,
-                                                                            TokenId.op_add, TokenId.op_substract, TokenId.op_multiply,
+                                                                            TokenId.op_greaterThanEqual, TokenId.op_add,
+                                                                            TokenId.op_substract, TokenId.op_multiply,
                                                                             TokenId.op_divide, TokenId.op_mod));
     private final Set<TokenId> expression_tokens = new HashSet<>(Set.of(TokenId.op_add, TokenId.op_substract, TokenId.op_not,
                                                                         TokenId.kw_null, TokenId.kw_true, TokenId.kw_false, TokenId.literal_integer,
@@ -57,15 +57,9 @@ public class SyntaxAnalyzer {
                                                                         TokenId.kw_new, TokenId.kw_static, TokenId.ps_openParenthesis,
                                                                         TokenId.method_var_id, TokenId.class_id));
     private final Set<TokenId> type_tokens = new HashSet<>(Set.of(TokenId.kw_int, TokenId.kw_char, TokenId.kw_boolean, TokenId.class_id));
-    private final Set<TokenId> methodHeader_tokens = new HashSet<>(Set.of(TokenId.kw_public, TokenId.kw_static, TokenId.kw_void,
-                                                                          TokenId.class_id, TokenId.kw_boolean, TokenId.kw_char,
-                                                                          TokenId.kw_int));
     private final Set<TokenId> classMember_tokens =new HashSet<>(Set.of(TokenId.kw_static, TokenId.kw_void, TokenId.class_id,
                                                                         TokenId.kw_boolean, TokenId.kw_char, TokenId.kw_int,
                                                                         TokenId.kw_public));
-    private final Set<TokenId> method_tokens = new HashSet<>(Set.of(TokenId.kw_public, TokenId.kw_static, TokenId.kw_void,
-                                                                    TokenId.class_id, TokenId.kw_boolean, TokenId.kw_char,
-                                                                    TokenId.kw_int));
     private final Set<TokenId> assigmentType_tokens = new HashSet<>(Set.of(TokenId.op_assignment, TokenId.op_assignmentAdition,
                                                                             TokenId.op_assignmentSubstraction));
 
@@ -133,91 +127,74 @@ public class SyntaxAnalyzer {
     }
 
     private void member() throws LexicalException, SyntaxException, IOException {
-        System.out.println("Current "+currentToken.getTokenType());
-
-        if( attribute_tokens.contains( currentToken.getTokenType() ) ) {
-            attribute();
-        }else if( method_tokens.contains( currentToken.getTokenType() ) ) {
-            method();
-        }else
-            throw new SyntaxException("public | static", currentToken);
-    }
-
-    private void attribute() throws LexicalException, SyntaxException, IOException {
-        /*if( attribute_tokens.contains( currentToken.getTokenType() ) ){*/
-        if( TokenId.kw_public == currentToken.getTokenType() )
-            visibility();
+        visibility();
+        modifiers();
         type();
-        attributes_parsing();
-        match(";", TokenId.ps_semicolon);
-        /*}else
-            throw new SyntaxException("an attribute", currentToken);*/
+        method_attribute();
     }
 
     private void visibility() throws LexicalException, SyntaxException, IOException {
         if( TokenId.kw_public == currentToken.getTokenType() ){
             match("public", TokenId.kw_public);
-        }else
-            throw new SyntaxException("public", currentToken);
-    }
-
-    private void attributes_parsing() throws LexicalException, SyntaxException, IOException {
-        if( TokenId.method_var_id == currentToken.getTokenType() ){
-            match("method or variable identifier", currentToken.getTokenType());
-            attributes_parsing_factorized();
-        }else
-            throw new SyntaxException("a method or variable identifier", currentToken);
-    }
-
-    private void attributes_parsing_factorized() throws LexicalException, SyntaxException, IOException {
-        if( TokenId.ps_colon == currentToken.getTokenType() ){
-            match(",",TokenId.ps_colon);
-            attributes_parsing();
         }else{
             //ε
         }
     }
 
-    private void method() throws LexicalException, SyntaxException, IOException {
-        method_header();
-        block();
-    }
-
-    private void method_header() throws LexicalException, SyntaxException, IOException {
-        if( methodHeader_tokens.contains( currentToken.getTokenType()) ){
-            public_method();
-            static_method();
-            method_type();
-            if(!possibly_builder)
-                match("method identifier", TokenId.method_var_id);
-            formal_arguments();
-        }else
-            throw new SyntaxException("method header", currentToken);
-    }
-
-    private void public_method() throws LexicalException, SyntaxException, IOException {
-        if( TokenId.kw_public == currentToken.getTokenType() ){
-            match("public", TokenId.kw_public);
-        }else{
-            //ε
-        }
-    }
-
-    private void static_method() throws LexicalException, SyntaxException, IOException {
-        if( TokenId.kw_static == currentToken.getTokenType() ){
+    private void modifiers() throws LexicalException, SyntaxException, IOException {
+        if (TokenId.kw_static == currentToken.getTokenType()){
             match("static", TokenId.kw_static);
         }else{
             //ε
         }
     }
 
-    private void method_type() throws LexicalException, SyntaxException, IOException {
-        if( type_tokens.contains( currentToken.getTokenType() ) ){
-            type();
-        }else if( TokenId.kw_void == currentToken.getTokenType() ){
-            match("void", TokenId.kw_void );
+    private void method_attribute() throws LexicalException, SyntaxException, IOException {
+        if( currentToken.getTokenType() == TokenId.ps_openParenthesis && possibly_a_builder ) {//is a builder
+            formal_arguments();
+            block();
+        } else {//is a method or an attribute
+            method_or_attribute_id();
+        }
+    }
+
+    private void method_or_attribute_id() throws  LexicalException, SyntaxException, IOException {
+        if( currentToken.getTokenType() == TokenId.method_var_id ){
+            match("method or variable identifier", TokenId.method_var_id);
+            method_or_variable();
+        } else
+            throw new SyntaxException("method or variable identifier", currentToken);
+
+    }
+
+    private void method_or_variable() throws LexicalException, SyntaxException, IOException {
+        if (currentToken.getTokenType() == TokenId.ps_semicolon) {//is a variable
+            match(";", TokenId.ps_semicolon);
+        } else if (currentToken.getTokenType() == TokenId.ps_comma) {//other variable of the list
+            attributes_parsing_factorized();
+        } else if( currentToken.getTokenType() == TokenId.ps_openParenthesis ){//is a method
+            formal_arguments();
+            block();
+        } else
+            throw new SyntaxException("; | , | (", currentToken);
+    }
+
+    private void attributes_parsing() throws LexicalException, SyntaxException, IOException {
+        if( TokenId.method_var_id == currentToken.getTokenType() ){
+            match("method or variable identifier", TokenId.method_var_id);
+            attributes_parsing_factorized();
         }else
-            throw new SyntaxException("method type", currentToken);
+            throw new SyntaxException("a method or variable identifier", currentToken);
+    }
+
+    private void attributes_parsing_factorized() throws LexicalException, SyntaxException, IOException {
+        if (TokenId.ps_comma == currentToken.getTokenType()) {
+            match(",", TokenId.ps_comma);
+            attributes_parsing();
+        } else if (TokenId.ps_semicolon == currentToken.getTokenType()){
+            match(";", TokenId.ps_semicolon);
+        }else
+            throw new SyntaxException(", | ;", currentToken);
     }
 
     private void type()  throws LexicalException, SyntaxException, IOException {
@@ -245,7 +222,7 @@ public class SyntaxAnalyzer {
 
     private void check_is_builder(){
         if( currentClassName.equals(currentToken.getLexeme()) )
-            possibly_builder = true;
+            possibly_a_builder = true;
     }
 
     private void formal_arguments() throws LexicalException, SyntaxException, IOException {

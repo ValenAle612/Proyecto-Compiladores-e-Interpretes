@@ -1,4 +1,4 @@
-package minijavaCompiler;
+package Tests;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;

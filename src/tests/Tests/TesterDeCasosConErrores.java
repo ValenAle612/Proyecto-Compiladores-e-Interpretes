@@ -1,4 +1,4 @@
-package minijavaCompiler;
+package Tests;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -84,14 +84,5 @@ public class TesterDeCasosConErrores {
         return errorCode;
     }
 
-
-
-
-
-    
-
-    
-    
-    
     
 }

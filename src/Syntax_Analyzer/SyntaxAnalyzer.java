@@ -59,7 +59,7 @@ public class SyntaxAnalyzer {
     private final Set<TokenId> type_tokens = new HashSet<>(Set.of(TokenId.kw_int, TokenId.kw_char, TokenId.kw_boolean, TokenId.class_id));
     private final Set<TokenId> classMember_tokens =new HashSet<>(Set.of(TokenId.kw_static, TokenId.kw_void, TokenId.class_id,
                                                                         TokenId.kw_boolean, TokenId.kw_char, TokenId.kw_int,
-                                                                        TokenId.kw_public));
+                                                                        TokenId.kw_public, TokenId.kw_private));
     private final Set<TokenId> assigmentType_tokens = new HashSet<>(Set.of(TokenId.op_assignment, TokenId.op_assignmentAdition,
                                                                             TokenId.op_assignmentSubstraction));
 
@@ -136,6 +136,8 @@ public class SyntaxAnalyzer {
     private void visibility() throws LexicalException, SyntaxException, IOException {
         if( TokenId.kw_public == currentToken.getTokenType() ){
             match("public", TokenId.kw_public);
+        }else if ( TokenId.kw_private == currentToken.getTokenType() ){
+            match("private", TokenId.kw_private);
         }else{
             //ε
         }

@@ -20,6 +20,7 @@ public class MiniJava_ReservedKeywords {
         dictionary.put("class", TokenId.kw_class);
         dictionary.put("extends", TokenId.kw_extends);
         dictionary.put("public", TokenId.kw_public);
+        dictionary.put("private", TokenId.kw_private);
         dictionary.put("static", TokenId.kw_static);
         dictionary.put("void", TokenId.kw_void);
 

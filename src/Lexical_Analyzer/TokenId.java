@@ -2,7 +2,7 @@ package Lexical_Analyzer;
 
 public enum TokenId {
         //Keywords
-        kw_class, kw_extends, kw_public, kw_static, kw_void,
+        kw_class, kw_extends, kw_public, kw_private, kw_static, kw_void,
         kw_boolean, kw_char, kw_int,
         kw_if, kw_else, kw_while, kw_return, kw_var,
         kw_switch, kw_case, kw_break,

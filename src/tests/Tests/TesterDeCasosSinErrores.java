@@ -58,15 +58,12 @@ public class TesterDeCasosSinErrores {
     public TesterDeCasosSinErrores(String input){
         this.input = input;
     }
-
-       
         
     @Test
     public void testIterado() {
         probarExito(input);
     }
 
-     
     void probarExito(String name){
             String path = testFilesDirectoryPath+name;
             String[] args = {path};

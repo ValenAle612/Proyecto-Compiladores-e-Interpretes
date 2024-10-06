@@ -1,13 +1,24 @@
 class Block{
-    public int int1;
-    private int int1, int2;
+    static int block_method(){
 
-    static int block(int a,int b,char c)
-    {
-        {
+        v.a.z() = v.a.z() + 5;
+
+            switch(hola){
+                case true:
+                    a = 2;
+                default: a = true;
+            }
+
+            int a;
+            boolean isTrue, isFalse, neither;
+            Clase claseA;
+            new Prueba(x,y,z);
+            !true;
             var x = 4 + 5 / 5 -(34-23);
-            v.a.z() = 5;
-        }
+
+    }
+
+    public Block(){
 
     }
 

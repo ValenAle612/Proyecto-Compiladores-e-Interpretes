@@ -2,9 +2,9 @@ package Symbol_Table;
 
 import Lexical_Analyzer.Token;
 import Lexical_Analyzer.TokenId;
+import Symbol_Table.Nodes.Access.BlockNode;
 import Syntax_Analyzer.SyntaxException;
 
-import javax.management.ObjectName;
 import java.util.*;
 
 public class SymbolTable {

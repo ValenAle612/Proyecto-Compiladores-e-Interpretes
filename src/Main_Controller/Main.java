@@ -3,6 +3,7 @@ package Main_Controller;
 import Lexical_Analyzer.*;
 import Source_Manager.SourceManager;
 import Source_Manager.SourceManagerImpl;
+import Symbol_Table.SemanticException;
 import Syntax_Analyzer.SyntaxAnalyzer;
 import Syntax_Analyzer.SyntaxException;
 
@@ -35,7 +36,7 @@ public class Main {
                     System.out.println("ERROR: file not found");
                 }catch ( IOException e ){
                     e.printStackTrace();
-                } catch (LexicalException | SyntaxException e) {
+                } catch (LexicalException | SyntaxException | SemanticException e) {
                     System.out.println(e.getMessage());
                 }
             }

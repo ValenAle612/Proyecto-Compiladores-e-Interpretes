@@ -3,9 +3,7 @@ package Symbol_Table;
 import Lexical_Analyzer.Token;
 import Syntax_Analyzer.SyntaxException;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public abstract class Class {

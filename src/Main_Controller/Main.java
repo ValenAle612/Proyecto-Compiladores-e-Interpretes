@@ -4,6 +4,7 @@ import Lexical_Analyzer.*;
 import Source_Manager.SourceManager;
 import Source_Manager.SourceManagerImpl;
 import Symbol_Table.SemanticException;
+import Symbol_Table.SymbolTable;
 import Syntax_Analyzer.SyntaxAnalyzer;
 import Syntax_Analyzer.SyntaxException;
 
@@ -25,9 +26,15 @@ public class Main {
                     SourceManager sourceManager = new SourceManagerImpl();
                     sourceManager.open(inputFile);
                     LexicalAnalyzer lexicalAnalyzer = new LexicalAnalyzer(sourceManager);
+                    SymbolTable.getInstance();
+                    SymbolTable.clean();
+
                     SyntaxAnalyzer syntaxAnalyzer = new SyntaxAnalyzer(lexicalAnalyzer);
 
-                    Token token = new Token(TokenId.initializer_token, "", 0);
+                    SymbolTable.getInstance().is_well_stated();
+                    SymbolTable.getInstance().consolidate();
+                    SymbolTable.getInstance().exists_static_main_method();
+                    SymbolTable.clean();
 
                     if(!errors)
                         System.out.println( "Successful build\n \n[SinErrores]" );

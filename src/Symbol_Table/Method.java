@@ -70,7 +70,8 @@ public class Method {
     }
 
     public void is_well_stated() throws SemanticException{
-        method_type.check_existence();
+        if(method_type!= null)
+            method_type.check_existence();
 
         for( Parameter parameter : parameters.values() )
             parameter.is_well_stated();
@@ -80,10 +81,12 @@ public class Method {
     public boolean is_method_equal(Method method){
         boolean is_same_method = this.method_token.getLexeme().equals( method.getMethod_token().getLexeme() );
         boolean are_same_parameters = this.compare_parameters( method.getParameters_list() );
-        boolean is_same_static_modifier = this.static_method == method.static_method;
+        boolean is_same_static_modifier = this.static_method == method.getStatic_method();
         boolean is_same_method_type = this.method_type.getCurrentType().equals( method.getMethod_type().getCurrentType() );
 
-        return is_same_method && are_same_parameters && is_same_static_modifier && is_same_method_type;
+        System.out.println(are_same_parameters);
+
+        return is_same_method && are_same_parameters &&  is_same_static_modifier && is_same_method_type;
     }
 
     private boolean compare_parameters(ArrayList<Parameter> another_method_parameters){

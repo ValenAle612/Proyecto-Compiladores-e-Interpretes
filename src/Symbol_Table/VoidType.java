@@ -1,6 +1,6 @@
 package Symbol_Table;
 
-public class VoidType extends MethodType {
+public class VoidType extends Type {
 
     public VoidType(){ }
 

@@ -39,8 +39,9 @@ public class ConcreteClass extends Class{
         this.class_token = class_token;
     }
 
-    public void setInherit_class_token(Token inherit_class_token){
-        this.inherit_class_token = inherit_class_token;
+
+    public void setInherit_class_token(Token inherited_class_token){
+        this.inherit_class_token = inherited_class_token;
     }
 
     public Token getInherit_class_token(){
@@ -109,7 +110,8 @@ public class ConcreteClass extends Class{
     public void is_well_stated() throws SemanticException, SyntaxException {
 
         if( !this.class_token.getLexeme().equals("Object") ){
-            if( SymbolTable.getInstance().class_exists( this.class_token.getLexeme() ) ){
+
+            if( SymbolTable.getInstance().class_exists( this.inherit_class_token.getLexeme() ) ){
 
                 for( Method method : this.methods.values() ){
                     method.is_well_stated();
@@ -146,15 +148,21 @@ public class ConcreteClass extends Class{
         check_circular_inheritance(new ArrayList<ConcreteClass>());
 
         if( !is_consolidated ){
+
             ConcreteClass concrete_class_p = SymbolTable.getInstance().getClass( inherit_class_token.getLexeme() );
+            System.out.println("CLASS "+this.class_token.getLexeme());
+            System.out.println("CLASS "+this.methods.size());
 
             if(concrete_class_p.is_consolidated){
 
                 for(Method method : concrete_class_p.getMethods().values()){
+                    System.out.println("method "+method.getMethod_token().getLexeme());
                     if( methods.get( method.getMethod_token().getLexeme() ) == null )
                         this.save_method(method);
                     else{
                         Method self_method = methods.get( method.getMethod_token().getLexeme() );
+                        System.out.println("self_method "+self_method.getParameters_list().size());
+                        System.out.println("method "+method.getParameters_list().size());
                         if( !method.is_method_equal( self_method ) )
                             throw new SemanticException( self_method.getMethod_token(),
                                     "the method "+ method.getMethod_token().getLexeme() +
@@ -174,6 +182,7 @@ public class ConcreteClass extends Class{
 
             }else{
                 concrete_class_p.consolidate();
+                this.consolidate();
             }
 
         }

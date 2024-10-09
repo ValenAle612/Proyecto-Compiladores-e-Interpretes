@@ -2,7 +2,6 @@ package Symbol_Table;
 
 import Lexical_Analyzer.Token;
 import Lexical_Analyzer.TokenId;
-import Symbol_Table.Nodes.Access.BlockNode;
 import Syntax_Analyzer.SyntaxException;
 
 import java.util.*;
@@ -16,12 +15,9 @@ public class SymbolTable {
     public static Attribute current_attribute;
     public static boolean is_there_a_main_class;
 
-    public static List<BlockNode> block_stack;
-
     private SymbolTable() throws SemanticException {
 
         classes = new HashMap<String, ConcreteClass>();
-        block_stack = new ArrayList<>();
         is_there_a_main_class = false;
 
         Token object = new Token(TokenId.class_id, "Object", 0);
@@ -118,6 +114,7 @@ public class SymbolTable {
 
     public void save_class(ConcreteClass concrete_class, String class_name) throws SemanticException{
         if( classes.get(class_name) == null ){
+            System.out.println("SAVECLASS "+concrete_class.getToken().getLexeme());
             classes.put(class_name, concrete_class);
         }else
             throw new SemanticException( concrete_class.getToken(), "the class " + concrete_class.getToken().getLexeme()
@@ -140,13 +137,10 @@ public class SymbolTable {
     }
 
     public boolean class_exists(String class_name){
-        boolean exists;
-        if( classes.get( class_name ) == null )
-            exists = false;
-        else
-            exists = true;
-
-        return exists;
+        ConcreteClass concreteClass = classes.get(class_name);
+        if(concreteClass == null)
+            return false;
+        else return true;
     }
 
     public static void clean(){
@@ -190,18 +184,6 @@ public class SymbolTable {
         if( !is_there_a_main_class )
             throw new SemanticException( main_token, "No static main() method without parameters was declared." );
 
-    }
-
-    public static void save_current_block(BlockNode block_node){
-        block_stack.add(0, block_node);
-    }
-
-    public static void delete_current_block(){
-        block_stack.remove(0);
-    }
-
-    public static BlockNode getCurrentBlock(){
-        return block_stack.get(0);
     }
 
 }

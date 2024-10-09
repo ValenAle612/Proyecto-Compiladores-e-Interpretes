@@ -84,8 +84,6 @@ public class Method {
         boolean is_same_static_modifier = this.static_method == method.getStatic_method();
         boolean is_same_method_type = this.method_type.getCurrentType().equals( method.getMethod_type().getCurrentType() );
 
-        System.out.println(are_same_parameters);
-
         return is_same_method && are_same_parameters &&  is_same_static_modifier && is_same_method_type;
     }
 

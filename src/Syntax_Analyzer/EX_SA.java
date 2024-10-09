@@ -613,7 +613,6 @@ public class EX_SA {
     }
 
     private void switch_list_statement() throws LexicalException, SyntaxException, IOException {
-        System.out.println(currentToken.getTokenType());
         if( switch_tokens.contains( currentToken.getTokenType() ) ) {
             switch_list_statement_parsing();
             switch_list_statement();

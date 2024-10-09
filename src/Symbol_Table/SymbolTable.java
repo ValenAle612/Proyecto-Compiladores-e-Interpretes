@@ -114,8 +114,7 @@ public class SymbolTable {
 
     public void save_class(ConcreteClass concrete_class, String class_name) throws SemanticException{
         if( classes.get(class_name) == null ){
-            System.out.println("SAVECLASS "+concrete_class.getToken().getLexeme());
-            classes.put(class_name, concrete_class);
+          classes.put(class_name, concrete_class);
         }else
             throw new SemanticException( concrete_class.getToken(), "the class " + concrete_class.getToken().getLexeme()
                                                                                  + " already exists " );
@@ -174,7 +173,7 @@ public class SymbolTable {
                 if( method.getStatic_method() != null )
                     if( method.getMethod_type().getCurrentType().equals("void")
                             && method.getMethod_token().getLexeme().equals("main")
-                            && method.getParameters().size() == 0 ){
+                            && method.getParameters().isEmpty() ){
                         is_there_a_main_class = true;
                         break;
                     }

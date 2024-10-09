@@ -150,19 +150,15 @@ public class ConcreteClass extends Class{
         if( !is_consolidated ){
 
             ConcreteClass concrete_class_p = SymbolTable.getInstance().getClass( inherit_class_token.getLexeme() );
-            System.out.println("CLASS "+this.class_token.getLexeme());
-            System.out.println("CLASS "+this.methods.size());
 
             if(concrete_class_p.is_consolidated){
 
                 for(Method method : concrete_class_p.getMethods().values()){
-                    System.out.println("method "+method.getMethod_token().getLexeme());
                     if( methods.get( method.getMethod_token().getLexeme() ) == null )
                         this.save_method(method);
                     else{
                         Method self_method = methods.get( method.getMethod_token().getLexeme() );
-                        System.out.println("self_method "+self_method.getParameters_list().size());
-                        System.out.println("method "+method.getParameters_list().size());
+
                         if( !method.is_method_equal( self_method ) )
                             throw new SemanticException( self_method.getMethod_token(),
                                     "the method "+ method.getMethod_token().getLexeme() +

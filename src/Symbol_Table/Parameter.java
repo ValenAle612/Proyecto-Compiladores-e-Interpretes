@@ -1,6 +1,7 @@
 package Symbol_Table;
 
 import Lexical_Analyzer.Token;
+import Symbol_Table.Types.ConcreteType;
 
 public class Parameter {
 

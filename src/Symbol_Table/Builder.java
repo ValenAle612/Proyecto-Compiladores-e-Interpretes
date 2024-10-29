@@ -18,4 +18,10 @@ public class Builder {
         return this.builder_token;
     }
 
+    public void is_well_stated() throws SemanticException {
+        if( SymbolTable.getInstance().getClass(this.builder_token.getLexeme()) == null )
+            throw new SemanticException(builder_token, "there is no class for the builder method "
+                    + builder_token.getLexeme());
+    }
+
 }

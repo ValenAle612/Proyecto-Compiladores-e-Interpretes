@@ -1,9 +1,12 @@
 package Symbol_Table;
 
 import Lexical_Analyzer.Token;
+import Symbol_Table.Nodes.Expression.ExpressionNode;
 import Syntax_Analyzer.SyntaxException;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public abstract class Class {
@@ -29,5 +32,15 @@ public abstract class Class {
     public abstract void save_extends(String lexeme, Token token) throws SemanticException;
 
     public abstract boolean is_concrete_class();
+
+    public abstract Method getMethod(String name);
+
+    public abstract Method conformance(String method_name, List<ExpressionNode> current_parameters) throws SemanticException;
+
+    public abstract Attribute getAttribute(String name);
+
+    public abstract Token getInherit_class_token();
+
+    public abstract ArrayList<String> ancestors() throws SemanticException;
 
 }

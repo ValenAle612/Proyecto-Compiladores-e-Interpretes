@@ -2,6 +2,9 @@ package Symbol_Table;
 
 import Lexical_Analyzer.TokenId;
 import Lexical_Analyzer.Token;
+import Symbol_Table.Nodes.Statement.BlockNode;
+import Symbol_Table.Types.MethodType;
+import Symbol_Table.Types.Type;
 
 import java.util.*;
 
@@ -13,12 +16,22 @@ public class Method {
     private TokenId static_method;
     private MethodType method_type;
 
-    public Method(HashMap<String, Parameter> parameters, ArrayList<Parameter> parameters_list, Token method_token, TokenId static_method, MethodType method_type){
+    private Token associated_class;
+    private BlockNode blockNode;
+
+    public Method(HashMap<String, Parameter> parameters, ArrayList<Parameter> parameters_list, Token method_token, TokenId static_method,
+                  MethodType method_type, Token associated_class){
         this.parameters = parameters;
         this.parameters_list = parameters_list;
         this.method_token = method_token;
         this.static_method = static_method;
         this.method_type = method_type;
+        this.associated_class = associated_class;
+        this.blockNode = new BlockNode();
+    }
+
+    public Token getAssociated_class(){
+        return associated_class;
     }
 
     public void setParameters(HashMap<String,Parameter> parameters){
@@ -27,6 +40,10 @@ public class Method {
 
     public HashMap<String, Parameter> getParameters(){
         return parameters;
+    }
+
+    public Parameter getParameter(String parameter){
+        return parameters.get(parameter);
     }
 
     public void setParameters_list(ArrayList<Parameter> parameters_list){
@@ -105,6 +122,41 @@ public class Method {
 
     public boolean verify_parameter(Parameter parameter_x, Parameter parameter_y){
         return parameter_x.getParameter_type().getCurrentType().equals( parameter_y.getParameter_type().getCurrentType() );
+    }
+
+    public void insert_block(BlockNode blockNode){
+        this.blockNode = blockNode;
+    }
+
+    public void statement_check() throws SemanticException {
+        SymbolTable.current_method = this;
+        blockNode.verify();
+    }
+
+    public boolean conformance( List<Type> current_parameters_type_list ) throws SemanticException {
+        List<Type> formal_parameters_type_list = new ArrayList<>();
+
+        for( Parameter formalParameter : parameters_list )
+            formal_parameters_type_list.add( formalParameter.getParameter_type() );
+
+        int i = 0;
+        boolean comforming_parameters = true;
+        if( formal_parameters_type_list.size() == current_parameters_type_list.size() ){
+
+            for( Type formalType : formal_parameters_type_list ){
+                Type currentType = current_parameters_type_list.get(i);
+                i++;
+                if( !currentType.is_subtype_of(formalType) ){
+                    comforming_parameters = false;
+                    break;
+                }
+            }
+
+        } else
+            comforming_parameters = false;
+
+        return comforming_parameters;
+
     }
 
 }

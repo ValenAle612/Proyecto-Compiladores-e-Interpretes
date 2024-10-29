@@ -1,10 +1,13 @@
 package Symbol_Table;
 
 import Lexical_Analyzer.Token;
+import Symbol_Table.Nodes.Expression.ExpressionNode;
+import Symbol_Table.Types.Type;
 import Syntax_Analyzer.SyntaxException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ConcreteClass extends Class{
@@ -39,13 +42,28 @@ public class ConcreteClass extends Class{
         this.class_token = class_token;
     }
 
-
     public void setInherit_class_token(Token inherited_class_token){
         this.inherit_class_token = inherited_class_token;
     }
 
     public Token getInherit_class_token(){
         return this.inherit_class_token;
+    }
+
+    @Override
+    public ArrayList<String> ancestors() throws SemanticException {
+        ArrayList<String> ancestors = new ArrayList<>();
+        ancestors.add(this.inherit_class_token.getLexeme());
+
+        if (inherit_class_token != null){
+            ancestors.add(inherit_class_token.getLexeme());
+            if (!inherit_class_token.getLexeme().equals("Object")) {
+                ancestors.addAll(SymbolTable.getInstance().getClass(inherit_class_token.getLexeme()).ancestors());
+            }
+        }
+
+        return ancestors;
+
     }
 
     public void setAttributes(Map<String, Attribute> attributes){
@@ -109,6 +127,8 @@ public class ConcreteClass extends Class{
     @Override
     public void is_well_stated() throws SemanticException, SyntaxException {
 
+        SymbolTable.current_class = this;
+
         if( !this.class_token.getLexeme().equals("Object") ){
 
             if( SymbolTable.getInstance().class_exists( this.inherit_class_token.getLexeme() ) ){
@@ -120,6 +140,8 @@ public class ConcreteClass extends Class{
                 for( Attribute attribute : this.attributes.values() ){
                     attribute.is_well_stated();
                 }
+
+                this.class_builder.is_well_stated();
 
             }else
                 throw new SemanticException( this.inherit_class_token,
@@ -141,6 +163,30 @@ public class ConcreteClass extends Class{
     @Override
     public boolean is_concrete_class() {
         return true;
+    }
+
+    @Override
+    public Method getMethod(String name) {
+        return methods.get(name);
+    }
+
+    @Override
+    public Method conformance(String method_name, List<ExpressionNode> current_parameters) throws SemanticException {
+        List<Type> current_parameters_type_list = new ArrayList<>();
+        for(ExpressionNode current_parameter : current_parameters)
+            current_parameters_type_list.add(current_parameter.verify());
+
+        for(Method method : methods.values())
+            if(method.getMethod_token().getLexeme().equals(method_name)
+                    && method.conformance(current_parameters_type_list))
+                return method;
+
+        return null;
+    }
+
+    @Override
+    public Attribute getAttribute(String name) {
+        return this.attributes.get(name);
     }
 
     public void consolidate() throws SemanticException, SyntaxException{
@@ -183,6 +229,13 @@ public class ConcreteClass extends Class{
 
         }
 
+    }
+
+    public void statement_check() throws SemanticException {
+        SymbolTable.current_class = this;
+        for( Method method : methods.values() )
+            if( method.getAssociated_class().getLexeme().equals(this.class_token.getLexeme()) )
+                method.statement_check();
     }
 
     private void check_circular_inheritance(ArrayList<ConcreteClass> parent_class) throws SemanticException {

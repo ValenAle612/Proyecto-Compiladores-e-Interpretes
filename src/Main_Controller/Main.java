@@ -34,6 +34,7 @@ public class Main {
                     SymbolTable.getInstance().is_well_stated();
                     SymbolTable.getInstance().consolidate();
                     SymbolTable.getInstance().exists_static_main_method();
+                    SymbolTable.getInstance().statement_check();
                     SymbolTable.clean();
 
                     if(!errors)

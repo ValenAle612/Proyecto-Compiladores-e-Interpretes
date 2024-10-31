@@ -37,7 +37,7 @@ public class BlockNode extends StatementNode {
 
     public void insertLocalVariable(LocalVarNode localVarNode) throws SemanticException {
 
-        if(SymbolTable.getInstance().get_local_variable_of_method(localVarNode.getToken().getLexeme()) != null)
+        if(SymbolTable.getInstance().get_local_variable_of_method(localVarNode.getToken().getLexeme()) != null )
             throw new SemanticException(localVarNode.getToken(), "variable is already declared in this block or in a superior block");
 
         if(SymbolTable.current_method.getParameter(localVarNode.getToken().getLexeme()) != null)
@@ -50,18 +50,11 @@ public class BlockNode extends StatementNode {
     @Override
     public void verify() throws SemanticException {
         SymbolTable.save_current_block(this);
-        LocalVarNode lvn = null;
+
         for(StatementNode statement : statements) {
-            if(statement.getClass().equals((new BlockNode()).getClass()));
-            System.out.println("ESTOY EN UN NODO BLOQUE ");
             statement.verify();
-            if(statement.getClass().equals((new LocalVarNode(null)).getClass()))
-                lvn = (LocalVarNode) statement;
         }
-        if(lvn != null)
-            System.out.println("BLOCK NODE delete "+lvn.getToken().getLexeme()+" current block ");
-        else
-            System.out.println("BLOCK NODE delete current block ");
+
         SymbolTable.delete_current_block();
     }
 

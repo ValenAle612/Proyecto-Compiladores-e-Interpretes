@@ -81,15 +81,5 @@ public class TesterDeCasosConErrores {
         String errorCode = lineWithTheCode.substring(3);
         return errorCode;
     }
-
-
-
-
-
-    
-
-    
-    
-    
     
 }

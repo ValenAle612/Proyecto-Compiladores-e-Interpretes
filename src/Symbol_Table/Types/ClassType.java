@@ -54,15 +54,15 @@ public class ClassType extends ConcreteType{
 
     public boolean verify_if_is_subtype(ClassType subtype) throws SemanticException {
         boolean is_subtype = this.getClass_type_token().getLexeme().equals(subtype.getClass_type_token().getLexeme());
-        System.out.println("CLASS TYPE VERIFY IS SUBT ");
 
         if(SymbolTable.getInstance().class_exists(subtype.getType_name())){
-            System.out.println("CLASS TYPE VERIFY IS SUBT 1er IF");
+
             ArrayList<String> ancestors = SymbolTable.getInstance().getClass(subtype.getType_name()).ancestors();
             if(ancestors.contains(this.class_type_token.getLexeme()))
                 is_subtype = true;
+
         } else if(subtype.is_String){
-            System.out.println("CLASS TYPE VERIFY IS SUBT 2do else IF");
+
             if(this.class_type_token.getLexeme().equals("String")){
                 is_subtype = true;
             } else if ( class_type_token.getTokenType().equals(TokenId.literal_String)

@@ -224,7 +224,6 @@ public class SyntaxAnalyzer {
         Attribute attribute = new Attribute(token, visibility, static_token, type);
         SymbolTable.current_class.save_attribute(attribute);
         attribute.setClass_that_contains_the_attribute(SymbolTable.current_class.getToken());
-        System.out.println("SYNTAX ANALYZER Symboltable class "+SymbolTable.current_class.getToken().getLexeme());
         SymbolTable.current_attribute = attribute;
         attributes_list_factorized(visibility, static_token, type);
         match(";", TokenId.ps_semicolon);

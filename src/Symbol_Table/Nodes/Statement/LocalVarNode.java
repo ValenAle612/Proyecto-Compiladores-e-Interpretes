@@ -39,14 +39,9 @@ public class LocalVarNode extends StatementNode {
             this.setType(expressionNode.verify());
 
         for(BlockNode blockNode : SymbolTable.block_stack) {
-            for(StatementNode st : blockNode.getStatements())
-                if(st.getClass().equals((new LocalVarNode(null)).getClass()))
-                    System.out.println("ESTOY COMPARANDO "+this.getToken().getLexeme()+" CON: "+((LocalVarNode)st).getToken().getLexeme());
             if(blockNode.getLocalVariable(token.getLexeme()) != null)
                 throw new SemanticException(token, "variable already declared");
         }
-
-        System.out.println("LOCAL VAR NODE prox delete current block ");
 
         if(expressionNode.verify().getCurrentType().equals("void"))
             throw new SemanticException(token, "is not possible assign something with void type to the variable "+token.getLexeme());

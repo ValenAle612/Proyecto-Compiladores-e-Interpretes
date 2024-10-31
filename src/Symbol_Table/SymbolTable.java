@@ -172,11 +172,10 @@ public class SymbolTable {
     }
 
     public static void save_current_block(BlockNode blockNode){
-        block_stack.add(blockNode);
+        block_stack.addFirst(blockNode);
     }
 
     public static BlockNode delete_current_block(){
-        System.out.println("SYMBOL TABLE delete current block ");
         return block_stack.removeFirst();
     }
 

@@ -33,8 +33,7 @@ public class ReturnNode extends StatementNode {
                 throw new SemanticException(token, "trying to return in a void function");
 
             Type expression_type = expressionNode.verify();
-            System.out.println("RERTURN NODE expression type "+expression_type.getCurrentType());
-            System.out.println("RERTURN NODE type "+type.getCurrentType());
+
             if(!expression_type.is_subtype_of(type))
                 throw new SemanticException(token,"type of return expression is not a subtype of method return");
         }

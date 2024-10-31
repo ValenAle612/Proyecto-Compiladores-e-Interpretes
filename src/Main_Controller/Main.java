@@ -28,7 +28,6 @@ public class Main {
                     LexicalAnalyzer lexicalAnalyzer = new LexicalAnalyzer(sourceManager);
                     SymbolTable.getInstance();
                     SymbolTable.clean();
-
                     SyntaxAnalyzer syntaxAnalyzer = new SyntaxAnalyzer(lexicalAnalyzer);
 
                     SymbolTable.getInstance().is_well_stated();

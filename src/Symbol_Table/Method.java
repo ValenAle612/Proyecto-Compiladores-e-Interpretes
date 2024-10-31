@@ -87,7 +87,7 @@ public class Method {
     }
 
     public void is_well_stated() throws SemanticException{
-        if(method_type!= null)
+        if(method_type != null)
             method_type.check_existence();
 
         for( Parameter parameter : parameters.values() )

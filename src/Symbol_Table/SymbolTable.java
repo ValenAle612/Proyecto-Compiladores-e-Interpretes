@@ -176,7 +176,8 @@ public class SymbolTable {
     }
 
     public static BlockNode delete_current_block(){
-        return block_stack.remove(0);
+        System.out.println("SYMBOL TABLE delete current block ");
+        return block_stack.removeFirst();
     }
 
     public static BlockNode getCurrent_block(){

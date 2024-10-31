@@ -10,11 +10,10 @@ import Symbol_Table.Types.Type;
 public class DecAssignmentNode extends AssignmentNode {
 
     protected Token token;
-    protected AccessNode accessNode;
 
     public DecAssignmentNode(Token token, AccessNode accessNode){
         this.token = token;
-        this.accessNode = accessNode;
+        this.left_node = accessNode;
     }
 
     @Override

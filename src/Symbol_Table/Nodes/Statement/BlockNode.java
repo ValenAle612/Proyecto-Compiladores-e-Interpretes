@@ -50,11 +50,19 @@ public class BlockNode extends StatementNode {
     @Override
     public void verify() throws SemanticException {
         SymbolTable.save_current_block(this);
-        for(StatementNode statement : statements)
+        LocalVarNode lvn = null;
+        for(StatementNode statement : statements) {
+            if(statement.getClass().equals((new BlockNode()).getClass()));
+            System.out.println("ESTOY EN UN NODO BLOQUE ");
             statement.verify();
-
+            if(statement.getClass().equals((new LocalVarNode(null)).getClass()))
+                lvn = (LocalVarNode) statement;
+        }
+        if(lvn != null)
+            System.out.println("BLOCK NODE delete "+lvn.getToken().getLexeme()+" current block ");
+        else
+            System.out.println("BLOCK NODE delete current block ");
         SymbolTable.delete_current_block();
-
     }
 
 }

@@ -20,7 +20,7 @@ public class SemanticException extends Exception{
     }
 
     public static String completeErrorMessage(Token currentToken, String message ){
-        return "Semantic error at line"+ currentToken.getLineNumber() +": "+
+        return "Semantic error at line "+ currentToken.getLineNumber() +": "+
                 message+"\n"+
                 "\n [Error:"+ currentToken.getLexeme() +"|"+
                     currentToken.getLineNumber()+"]";

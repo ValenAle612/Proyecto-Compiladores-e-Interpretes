@@ -200,9 +200,10 @@ public class ConcreteClass extends Class{
             if(concrete_class_p.is_consolidated){
 
                 for(Method method : concrete_class_p.getMethods().values()){
-                    if( methods.get( method.getMethod_token().getLexeme() ) == null )
+                    if( methods.get( method.getMethod_token().getLexeme() ) == null ) {
+                        System.out.println("CONCRETE CLASS save method: "+method.getMethod_token().getLexeme());
                         this.save_method(method);
-                    else{
+                    }else{
                         Method self_method = methods.get( method.getMethod_token().getLexeme() );
 
                         if( !method.is_method_equal( self_method ) )

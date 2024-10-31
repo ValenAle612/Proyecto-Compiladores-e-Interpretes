@@ -9,12 +9,14 @@ public class Attribute {
 
     private Token attribute_token;
     private TokenId visibility;
+    private TokenId static_attribute;
     private ConcreteType attribute_type;
     private Token class_that_contains_the_attribute;
 
-    public Attribute(Token attribute_token, TokenId visibility, ConcreteType attribute_type){
+    public Attribute(Token attribute_token, TokenId visibility, TokenId static_attribute, ConcreteType attribute_type){
         this.attribute_token = attribute_token;
         this.visibility = visibility;
+        this.static_attribute = static_attribute;
         this.attribute_type = attribute_type;
     }
 
@@ -32,6 +34,14 @@ public class Attribute {
 
     public TokenId getVisibility(){
         return visibility;
+    }
+
+    public void setStatic_attribute(TokenId static_attribute){
+        this.static_attribute = static_attribute;
+    }
+
+    public TokenId getStatic_attribute(){
+        return static_attribute;
     }
 
     public void setAttribute_type(ConcreteType attribute_type){

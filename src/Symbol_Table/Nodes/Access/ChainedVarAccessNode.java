@@ -47,6 +47,8 @@ public class ChainedVarAccessNode extends ChainedNode {
 
     @Override
     public boolean can_be_called() {
+        System.out.println("CHAINED VARIABLE can be called "+this.token.getLexeme());
+        System.out.println("CHAINED VARIABLE chained Node != null "+(chainedNode != null));
         if( chainedNode != null )
             return chainedNode.can_be_called();
         else
@@ -55,10 +57,12 @@ public class ChainedVarAccessNode extends ChainedNode {
 
     @Override
     public boolean can_be_assigned() {
+        System.out.println("CHAINED VARIABLE can be assigned "+this.token.getLexeme());
+        System.out.println("CHAINED VARIABLE chained Node != null "+(chainedNode != null));
         if( chainedNode != null )
             return chainedNode.can_be_assigned();
         else
-            return false;
+            return true;
     }
 
 }

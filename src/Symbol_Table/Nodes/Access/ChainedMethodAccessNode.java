@@ -45,6 +45,8 @@ public class ChainedMethodAccessNode extends ChainedNode {
 
     @Override
     public boolean can_be_called() {
+        System.out.println("CHAINED METHOD can be called");
+        System.out.println("CHAINED METHOD chained Node != null "+(chainedNode != null));
         if( chainedNode != null )
             return chainedNode.can_be_called();
         else
@@ -53,6 +55,8 @@ public class ChainedMethodAccessNode extends ChainedNode {
 
     @Override
     public boolean can_be_assigned() {
+        System.out.println("CHAINED METHOD can be assigned");
+        System.out.println("CHAINED METHOD chained Node != null "+(chainedNode != null));
         if( chainedNode != null )
             return chainedNode.can_be_assigned();
         else

@@ -10,6 +10,7 @@ import Symbol_Table.Parameter;
 import Symbol_Table.SemanticException;
 import Symbol_Table.SymbolTable;
 import Symbol_Table.Types.Type;
+import java.util.List;
 
 public class VarAccessNode extends AccessNode{
 
@@ -84,10 +85,28 @@ public class VarAccessNode extends AccessNode{
 
     @Override
     public boolean can_be_assigned() {
-        if( chainedNode != null )
+        System.out.println("can be assigned de var access node ");
+        if( chainedNode != null ) {
+            System.out.println("dió true chained node != null: ");
+            System.out.print(this.token.getLexeme()+"\n");
             return chainedNode.can_be_assigned();
-        else
-            return false;
+        }else{
+            Attribute attribute = SymbolTable.current_class.getAttribute(this.token.getLexeme());
+            List<Parameter> parameters = SymbolTable.current_method.getParameters_list();
+            System.out.println("VAR ACCESS NODE current method "+SymbolTable.current_method.getMethod_token().getLexeme());
+
+            for(Parameter parameter : parameters){
+                System.out.println("VAR ACCESS NODE current parameter "+parameter.getParameter_token().getLexeme());
+                System.out.println("VAR ACCESS NODE token lexeme "+token.getLexeme());
+                if( parameter.getParameter_token().getLexeme().equals(this.token.getLexeme()) ){
+                    return true;
+                }
+            }
+
+
+            return attribute != null;
+        }
+
     }
 
     @Override

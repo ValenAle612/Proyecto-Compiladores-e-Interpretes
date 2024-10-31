@@ -144,7 +144,7 @@ public class SyntaxAnalyzer {
         }
     }
 
-    private void member() throws LexicalException, SyntaxException, IOException, SemanticException {
+    /*private void member() throws LexicalException, SyntaxException, IOException, SemanticException {
         if(attribute_tokens.contains(currentToken.getTokenType()))
             attribute();
         else if(method_tokens.contains(currentToken.getTokenType()))
@@ -152,56 +152,41 @@ public class SyntaxAnalyzer {
         else
             throw new SyntaxException("public | private | static", currentToken);
 
-    }
+    }*/
 
-    private void attribute() throws LexicalException, SyntaxException, IOException, SemanticException {
-        if(TokenId.kw_public == currentToken.getTokenType() || TokenId.kw_private == currentToken.getTokenType() ) {
-            TokenId tokenId = visibility();
-            ConcreteType type = type();
-            attributes_list(tokenId, type);
-            match(";", TokenId.ps_semicolon);
-        }else
-            throw new SyntaxException("an attribute",currentToken);
-    }
+    private void member() throws LexicalException, SyntaxException, IOException, SemanticException {
+        TokenId visibility_token = visibility();
+        TokenId static_token = static_optional();
+        Token token;
+        Type type;
 
-    private void method() throws LexicalException, SyntaxException, IOException, SemanticException {
-        method_header();
-        Method method = SymbolTable.current_method;
-        BlockNode block = block();
-        method.insert_block(block);
-    }
+        if (TokenId.class_id == currentToken.getTokenType()){
 
-    private void method_header() throws LexicalException, SyntaxException, IOException, SemanticException {
-        if(method_tokens.contains(currentToken.getTokenType())){
-            TokenId static_token = static_method_optional();
-            MethodType methodType = method_type();
-            Token token = currentToken;
+            token = currentToken;
+            match("class identifier", TokenId.class_id);
+            type = null;
+
+            if(currentToken.getTokenType() == TokenId.ps_openParenthesis && !token.getLexeme().equals(current_class.getLexeme()))
+                throw new SyntaxException("method or variable identifier", currentToken);
+            else if(currentToken.getTokenType() != TokenId.ps_openParenthesis){//its not a builder
+                type = new ClassType(token);
+                token = currentToken;
+                match("method or variable identifier", TokenId.method_var_id);
+            }
+
+        }else{
+            type = method_var_type();
+            token = currentToken;
             match("method or variable identifier", TokenId.method_var_id);
-            Method method = new Method(new HashMap<String, Parameter>(), new ArrayList<Parameter>(), token,
-                    static_token, methodType, SymbolTable.current_class.getToken());
-            SymbolTable.current_method = method;
-            formal_arguments();
-            SymbolTable.current_class.save_method(method);
-        }else
-            throw new SyntaxException("a method header", currentToken);
-    }
+        }
 
-    private TokenId static_method_optional() throws LexicalException, SyntaxException, IOException {
-        if (TokenId.kw_static == currentToken.getTokenType()){
-            match("static", TokenId.kw_static);
-            return TokenId.kw_static;
-        }else
-            return null;
-    }
+        if(TokenId.ps_openParenthesis == currentToken.getTokenType()){//is a method
+            method(token, static_token, type);
+        } else if (TokenId.ps_semicolon == currentToken.getTokenType() || TokenId.ps_comma == currentToken.getTokenType()) {//is an attribute
+            attribute(token, visibility_token, static_token, (ConcreteType) type);
+        } else
+            throw new SyntaxException("( | ; | ,", currentToken);
 
-    private MethodType method_type() throws LexicalException, SyntaxException, IOException {
-        if(type_tokens.contains(currentToken.getTokenType())){
-            return type();
-        }else if(TokenId.kw_void == currentToken.getTokenType()){
-            match("void", TokenId.kw_void);
-            return new VoidType();
-        }else
-            throw new SyntaxException("a method type", currentToken);
     }
 
     private TokenId visibility() throws LexicalException, SyntaxException, IOException {
@@ -212,30 +197,85 @@ public class SyntaxAnalyzer {
             match("private", TokenId.kw_private);
             return TokenId.kw_private;
         }else{
-            throw new SyntaxException("public | private", currentToken);
+            return null;
         }
     }
 
-    private void attributes_list(TokenId tokenId, ConcreteType type) throws LexicalException, SyntaxException, SemanticException, IOException {
+    private TokenId static_optional() throws LexicalException, SyntaxException, SemanticException, IOException {
+        if(TokenId.kw_static == currentToken.getTokenType()){
+            match("static", TokenId.kw_static);
+            return TokenId.kw_static;
+        }else{
+            return null;
+        }
+    }
+
+    private Type method_var_type() throws LexicalException, SyntaxException, SemanticException, IOException {
+        if(type_tokens.contains(currentToken.getTokenType())){
+            return type();
+        }else if(TokenId.kw_void == currentToken.getTokenType()){
+            match("void", TokenId.kw_void);
+            return new VoidType();
+        }else
+            throw new SyntaxException("a method type", currentToken);
+    }
+
+    private void attribute(Token token, TokenId visibility, TokenId static_token , ConcreteType type) throws LexicalException, SyntaxException, IOException, SemanticException {
+        Attribute attribute = new Attribute(token, visibility, static_token, type);
+        SymbolTable.current_class.save_attribute(attribute);
+        attribute.setClass_that_contains_the_attribute(SymbolTable.current_class.getToken());
+        System.out.println("SYNTAX ANALYZER Symboltable class "+SymbolTable.current_class.getToken().getLexeme());
+        SymbolTable.current_attribute = attribute;
+        attributes_list_factorized(visibility, static_token, type);
+        match(";", TokenId.ps_semicolon);
+
+    }
+
+    private void attributes_list(TokenId visibility, TokenId static_token , ConcreteType type) throws LexicalException, SyntaxException, SemanticException, IOException {
         if(TokenId.method_var_id == currentToken.getTokenType()){
             Token token = currentToken;
             match("method or variable identifier", currentToken.getTokenType());
-            Attribute attribute = new Attribute(token, tokenId, type);
+            Attribute attribute = new Attribute(token, visibility, static_token, type);
             SymbolTable.current_class.save_attribute(attribute);
             attribute.setClass_that_contains_the_attribute(SymbolTable.current_class.getToken());
             SymbolTable.current_attribute = attribute;
-            attributes_list_factorized(tokenId, type);
+            attributes_list_factorized(visibility, static_token, type);
         }else
             throw new SyntaxException("a method or variable identifier", currentToken);
     }
 
-    private void attributes_list_factorized(TokenId tokenId, ConcreteType type) throws LexicalException, SyntaxException, SemanticException, IOException {
+    private void attributes_list_factorized(TokenId visibility, TokenId static_token , ConcreteType type) throws LexicalException, SyntaxException, SemanticException, IOException {
         if(TokenId.ps_comma == currentToken.getTokenType()){
             match(",", TokenId.ps_comma);
-            attributes_list(tokenId, type);
+            attributes_list(visibility, static_token, type);
         }else{
             //ε
         }
+    }
+
+    private void method(Token token, TokenId static_token, Type type) throws LexicalException, SyntaxException, IOException, SemanticException {
+        method_header(token, static_token, type);
+        Method method = SymbolTable.current_method;
+        BlockNode block = block();
+        method.insert_block(block);
+    }
+
+    private void method_header(Token token, TokenId static_token, Type type) throws LexicalException, SyntaxException, IOException, SemanticException {
+        Method method = new Method(new HashMap<String, Parameter>(), new ArrayList<Parameter>(), token,
+                static_token, type, SymbolTable.current_class.getToken());
+        SymbolTable.current_method = method;
+        formal_arguments();
+        SymbolTable.current_class.save_method(method);
+    }
+
+    private MethodType method_type() throws LexicalException, SyntaxException, IOException {
+        if(type_tokens.contains(currentToken.getTokenType())){
+            return type();
+        }else if(TokenId.kw_void == currentToken.getTokenType()){
+            match("void", TokenId.kw_void);
+            return new VoidType();
+        }else
+            throw new SyntaxException("a method type", currentToken);
     }
 
     private ConcreteType type()  throws LexicalException, SyntaxException, IOException {
@@ -286,11 +326,14 @@ public class SyntaxAnalyzer {
     }
 
     private void single_formal_argument() throws LexicalException, SyntaxException, IOException, SemanticException {
-        ConcreteType type = type();
-        Token token = currentToken;
-        match("method or variable identifier", TokenId.method_var_id);
-        Parameter parameter = new Parameter(token, type);
-        SymbolTable.current_method.save_parameter(token.getLexeme(), parameter);
+        if( type_tokens.contains(currentToken.getTokenType())) {
+            ConcreteType type = type();
+            Token token = currentToken;
+            match("method or variable identifier", TokenId.method_var_id);
+            Parameter parameter = new Parameter(token, type);
+            SymbolTable.current_method.save_parameter(token.getLexeme(), parameter);
+        }else
+            throw new SyntaxException("a valid type", currentToken);
     }
 
     private void formal_arguments_factorized() throws LexicalException, SyntaxException, IOException, SemanticException {

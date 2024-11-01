@@ -24,6 +24,7 @@ public class ReturnNode extends StatementNode {
     @Override
     public void verify() throws SemanticException{
         MethodType type = SymbolTable.current_method.getMethod_type();
+        System.out.println("type "+type.getCurrentType());
 
         if(expressionNode == null) {
             if(!type.same_type(new VoidType()))

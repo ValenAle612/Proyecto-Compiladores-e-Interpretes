@@ -49,7 +49,7 @@ public class StaticMethodAccessNode extends AccessNode {
         if (class_ == null)
             throw new SemanticException(token, "class "+token.getLexeme()+" is not declared");
 
-        Method method = class_.getMethod(token.getLexeme());
+        Method method = class_.getMethod(method_token.getLexeme());
         if(method == null)
             throw new SemanticException(method_token, "method "+method_token.getLexeme()+" is not declared");
         else if( SymbolTable.current_method.getStatic_method() != null

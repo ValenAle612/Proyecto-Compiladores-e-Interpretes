@@ -85,17 +85,25 @@ public class VarAccessNode extends AccessNode{
 
     @Override
     public boolean can_be_assigned() {
+        System.out.println("VAR ACC ");
         if( chainedNode != null ) {
+            System.out.println("dis null ");
             return chainedNode.can_be_assigned();
         }else{
+            System.out.println("null");
             Attribute attribute = SymbolTable.current_class.getAttribute(this.token.getLexeme());
             List<Parameter> parameters = SymbolTable.current_method.getParameters_list();
+            BlockNode block = SymbolTable.current_method.getBlockNode();
+
+            if(block.getLocal_variables().get(token.getLexeme()) != null)
+                return true;
 
             for(Parameter parameter : parameters){
                 if( parameter.getParameter_token().getLexeme().equals(this.token.getLexeme()) ){
                     return true;
                 }
             }
+
 
 
             return attribute != null;

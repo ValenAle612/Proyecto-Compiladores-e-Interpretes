@@ -128,8 +128,13 @@ public class Method {
         this.blockNode = blockNode;
     }
 
+    public BlockNode getBlockNode(){
+        return blockNode;
+    }
+
     public void statement_check() throws SemanticException {
         SymbolTable.current_method = this;
+        System.out.println("METHOD "+method_token.getLexeme());
         blockNode.verify();
     }
 

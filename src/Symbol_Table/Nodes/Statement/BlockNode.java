@@ -52,6 +52,7 @@ public class BlockNode extends StatementNode {
         SymbolTable.save_current_block(this);
 
         for(StatementNode statement : statements) {
+            System.out.println("STATEMENT ");
             statement.verify();
         }
 

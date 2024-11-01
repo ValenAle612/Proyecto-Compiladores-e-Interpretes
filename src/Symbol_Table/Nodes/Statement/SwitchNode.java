@@ -1,7 +1,5 @@
 package Symbol_Table.Nodes.Statement;
 
-import Lexical_Analyzer.Token;
-import Symbol_Table.Nodes.Expression.ExpressionNode;
 import Symbol_Table.SemanticException;
 
 import java.util.ArrayList;
@@ -9,37 +7,31 @@ import java.util.List;
 
 public class SwitchNode extends StatementNode {
 
-    protected Token token;
-    protected ExpressionNode variable;
-    protected List<CaseNode> case_nodes;
-    protected DefaultNode defaultNode;
+    private LocalVarNode variable;
+    private List<CaseNode> cases;
+    private StatementNode defaultCase;
 
-    public SwitchNode(Token token, ExpressionNode variable){
-        this.token = token;
+    public SwitchNode(LocalVarNode variable) {
         this.variable = variable;
-        this.case_nodes = new ArrayList<>();
-        this.defaultNode = null;
+        this.cases = new ArrayList<>();
     }
 
-    public Token getToken(){
-        return token;
+    public void setCases(List<CaseNode> cases) {
+        this.cases = cases;
     }
 
-    public void setToken(Token token){
-        this.token = token;
+    public void setDefaultCase(StatementNode defaultCase) {
+        this.defaultCase = defaultCase;
     }
 
-    public void insertCaseBlock(CaseNode caseNode){
-        case_nodes.add(caseNode);
-    }
-
-    public void setDefaultNode(DefaultNode defaultNode){
-        this.defaultNode = defaultNode;
-    }
-
+    @Override
     public void verify() throws SemanticException {
+        for (CaseNode caseNode : cases) {
+            caseNode.verify();
+        }
 
+        if (defaultCase != null) {
+            defaultCase.verify();
+        }
     }
-
-
 }

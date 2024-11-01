@@ -5,7 +5,6 @@ import Symbol_Table.SemanticException;
 import Symbol_Table.Types.BooleanType;
 import Symbol_Table.Types.ConcreteType;
 import Symbol_Table.Types.IntType;
-import Symbol_Table.Types.Type;
 
 public class GreaterBinaryExpNode extends BinaryExpressionNode {
 

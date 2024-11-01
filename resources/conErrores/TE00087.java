@@ -1,7 +1,7 @@
 ///[Error:true|9]
 // Nombre de variable local o parametro repetido x - ln: 17
 class A {
-    int a1;
+    String a1;
 
     void m1(int p1)
     {

@@ -1,13 +1,12 @@
 package Symbol_Table.Nodes.Statement;
 
 import Lexical_Analyzer.Token;
-import Symbol_Table.Nodes.Expression.ExpressionNode;
 import Symbol_Table.Nodes.Expression.OperandNode;
 import Symbol_Table.Nodes.Statement.StatementNode;
 import Symbol_Table.SemanticException;
 import Symbol_Table.Types.Type;
 
-public class CaseNode{
+public class CaseNode extends StatementNode{
 
     private Token token;
     private OperandNode literal;
@@ -24,6 +23,7 @@ public class CaseNode{
         this.statement = statement;
     }
 
+    @Override
     public void verify() throws SemanticException {
 
         if (switch_condition_type!= null && !literal.verify().same_type(switch_condition_type)) {

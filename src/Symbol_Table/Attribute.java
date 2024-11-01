@@ -3,7 +3,6 @@ package Symbol_Table;
 import Lexical_Analyzer.Token;
 import Lexical_Analyzer.TokenId;
 import Symbol_Table.Types.ConcreteType;
-import Symbol_Table.Types.Type;
 
 public class Attribute {
 

@@ -5,8 +5,6 @@ import Symbol_Table.SemanticException;
 import Symbol_Table.Types.BooleanType;
 import Symbol_Table.Types.Type;
 
-import java.beans.Expression;
-
 public class AndBinaryExpNode extends BinaryExpressionNode {
 
     public AndBinaryExpNode(Token token){

@@ -1,6 +1,5 @@
 package Symbol_Table.Types;
 
-import Symbol_Table.Method;
 import Symbol_Table.SemanticException;
 
 public abstract class MethodType {

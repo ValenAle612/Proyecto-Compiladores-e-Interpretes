@@ -1,13 +1,11 @@
 package Symbol_Table.Nodes.Access;
 
 import Symbol_Table.Class;
-import Symbol_Table.Nodes.Expression.ExpressionNode;
 import Lexical_Analyzer.Token;
 import Symbol_Table.Method;
 import Symbol_Table.Nodes.Expression.ExpressionNode;
 import Symbol_Table.SemanticException;
 import Symbol_Table.SymbolTable;
-import Symbol_Table.Types.MethodType;
 import Symbol_Table.Types.Type;
 
 import java.util.ArrayList;

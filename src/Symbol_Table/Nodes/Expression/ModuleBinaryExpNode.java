@@ -2,10 +2,8 @@ package Symbol_Table.Nodes.Expression;
 
 import Lexical_Analyzer.Token;
 import Symbol_Table.SemanticException;
-import Symbol_Table.Types.BooleanType;
 import Symbol_Table.Types.ConcreteType;
 import Symbol_Table.Types.IntType;
-import Symbol_Table.Types.Type;
 
 public class ModuleBinaryExpNode extends BinaryExpressionNode {
 

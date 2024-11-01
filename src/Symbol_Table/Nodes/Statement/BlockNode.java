@@ -3,7 +3,6 @@ package Symbol_Table.Nodes.Statement;
 import Symbol_Table.SemanticException;
 import Symbol_Table.SymbolTable;
 
-import javax.swing.plaf.nimbus.State;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -52,7 +51,6 @@ public class BlockNode extends StatementNode {
         SymbolTable.save_current_block(this);
 
         for(StatementNode statement : statements) {
-            System.out.println("STATEMENT ");
             statement.verify();
         }
 

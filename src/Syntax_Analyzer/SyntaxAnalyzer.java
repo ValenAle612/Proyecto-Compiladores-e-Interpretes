@@ -11,10 +11,7 @@ import Symbol_Table.Nodes.Expression.*;
 import Symbol_Table.Nodes.Literal.*;
 import Symbol_Table.Nodes.Statement.*;
 import Symbol_Table.Types.*;
-import org.w3c.dom.Attr;
 
-import java.beans.Expression;
-import java.beans.Statement;
 import java.io.IOException;
 import java.util.*;
 
@@ -327,7 +324,7 @@ public class SyntaxAnalyzer {
         }
     }
 
-    private BlockNode block() throws LexicalException, SyntaxException, IOException {
+    private BlockNode block() throws LexicalException, SyntaxException, SemanticException, IOException {
         match("{", TokenId.ps_openBrace);
         BlockNode blockNode = new BlockNode();
         statement_parsing(blockNode);
@@ -335,7 +332,7 @@ public class SyntaxAnalyzer {
         return blockNode;
     }
 
-    private void statement_parsing(BlockNode block) throws LexicalException, SyntaxException, IOException {
+    private void statement_parsing(BlockNode block) throws LexicalException, SyntaxException, SemanticException, IOException {
         if( statement_tokens.contains( currentToken.getTokenType() ) ){
             StatementNode statementNode = statement();
             block.insert_statement(statementNode);
@@ -345,7 +342,7 @@ public class SyntaxAnalyzer {
         }
     }
 
-    private StatementNode statement() throws LexicalException, SyntaxException, IOException {
+    private StatementNode statement() throws LexicalException, SyntaxException, SemanticException, IOException {
         if( TokenId.ps_semicolon == currentToken.getTokenType() ){
             match(";", TokenId.ps_semicolon);
             return new EmptyStatementNode();
@@ -368,7 +365,7 @@ public class SyntaxAnalyzer {
             AccessNode accessNode = access();
 
             if(currentToken.getTokenType() == TokenId.ps_semicolon && last_call == null)
-                throw new SyntaxException("a statement", currentToken);
+                throw new SemanticException(currentToken, "Statement expected; isolated expressions are not allowed");
 
             StatementNode statementNode = assignment_statement_or_call(accessNode);
             match(";",TokenId.ps_semicolon);
@@ -548,7 +545,6 @@ public class SyntaxAnalyzer {
             ChainedNode chainedNode = optional_chain();
             return new ChainedMethodAccessNode(token, expressionNodeList, chainedNode);
         } else {
-            System.out.println("pase por aca");
             last_call = null;
             ChainedNode chainedNode = optional_chain();
             return new ChainedVarAccessNode(token, chainedNode);
@@ -665,7 +661,7 @@ public class SyntaxAnalyzer {
         }
     }
 
-    private IfNode if_statement() throws LexicalException, SyntaxException, IOException {
+    private IfNode if_statement() throws LexicalException, SyntaxException, SemanticException, IOException {
         Token token = currentToken;
         match("if", TokenId.kw_if);
         match("(", TokenId.ps_openParenthesis);
@@ -678,7 +674,7 @@ public class SyntaxAnalyzer {
         return ifNode;
     }
 
-    private StatementNode else_statement() throws LexicalException, SyntaxException, IOException {
+    private StatementNode else_statement() throws LexicalException, SyntaxException, SemanticException, IOException {
         if( TokenId.kw_else == currentToken.getTokenType() ){
             match("else", TokenId.kw_else);
             return statement();
@@ -687,7 +683,7 @@ public class SyntaxAnalyzer {
         }
     }
 
-    private WhileNode while_statement() throws LexicalException, SyntaxException, IOException {
+    private WhileNode while_statement() throws LexicalException, SyntaxException, SemanticException, IOException {
         Token token = currentToken;
         match("while", TokenId.kw_while);
         match("(", TokenId.ps_openParenthesis);
@@ -698,7 +694,7 @@ public class SyntaxAnalyzer {
         return whileNode;
     }
 
-    private SwitchNode switch_statement() throws LexicalException, SyntaxException, IOException {
+    private SwitchNode switch_statement() throws LexicalException, SyntaxException, SemanticException, IOException {
         match("switch", TokenId.kw_switch);
         match("(", TokenId.ps_openParenthesis);
         Token token = currentToken;
@@ -732,7 +728,7 @@ public class SyntaxAnalyzer {
         }
     }
 
-    private List<CaseNode> switch_list_statement(Type switch_condition_type) throws LexicalException, SyntaxException, IOException {
+    private List<CaseNode> switch_list_statement(Type switch_condition_type) throws LexicalException, SyntaxException, SemanticException, IOException {
         if( switch_tokens.contains( currentToken.getTokenType() ) ) {
             return switch_list_statement_parsing(switch_condition_type);
         }else{
@@ -740,7 +736,7 @@ public class SyntaxAnalyzer {
         }
     }
 
-    private List<CaseNode> switch_list_statement_parsing(Type switch_condition_type) throws LexicalException, SyntaxException, IOException {
+    private List<CaseNode> switch_list_statement_parsing(Type switch_condition_type) throws LexicalException, SyntaxException, SemanticException, IOException {
         if( switch_tokens.contains( currentToken.getTokenType() ) ) {
             List<CaseNode> cases = new ArrayList<>();
 
@@ -756,7 +752,7 @@ public class SyntaxAnalyzer {
         }
     }
 
-    private CaseNode switch_list_statement_parsing_recursive(Type switch_condition_type) throws LexicalException, SyntaxException, IOException {
+    private CaseNode switch_list_statement_parsing_recursive(Type switch_condition_type) throws LexicalException, SyntaxException, SemanticException, IOException {
         match("case", TokenId.kw_case);
         Token token = currentToken;
         OperandNode literal = literal();
@@ -767,7 +763,7 @@ public class SyntaxAnalyzer {
         return caseNode;
     }
 
-    private StatementNode case_optional_statement() throws LexicalException, SyntaxException, IOException {
+    private StatementNode case_optional_statement() throws LexicalException, SyntaxException, SemanticException, IOException {
         if(statement_tokens.contains( currentToken.getTokenType() ) ){
             return statement();
         }else {
@@ -775,7 +771,7 @@ public class SyntaxAnalyzer {
         }
     }
 
-    private StatementNode default_case_optional_statement() throws LexicalException, SyntaxException, IOException {
+    private StatementNode default_case_optional_statement() throws LexicalException, SyntaxException, SemanticException, IOException {
         if (currentToken.getTokenType() == TokenId.kw_default){
             match("default", TokenId.kw_default);
             match(":", TokenId.ps_colon);

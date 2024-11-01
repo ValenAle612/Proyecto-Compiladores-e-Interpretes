@@ -5,7 +5,6 @@ import Lexical_Analyzer.TokenId;
 import Symbol_Table.SemanticException;
 import Symbol_Table.SymbolTable;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class ClassType extends ConcreteType{

@@ -7,6 +7,7 @@ import Symbol_Table.Nodes.Expression.ExpressionNode;
 import Symbol_Table.SemanticException;
 import Symbol_Table.SymbolTable;
 import Symbol_Table.Types.Type;
+import Symbol_Table.Types.VoidType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,12 +17,15 @@ public class StaticMethodAccessNode extends AccessNode {
     protected Token token;
     protected Token method_token;
     protected List<ExpressionNode> current_arguments;
+    protected Method method;
+    protected List<ExpressionNode> inverted_parameters;
 
 
     public StaticMethodAccessNode(Token token, Token method_token, List<ExpressionNode> current_arguments){
         this.token = token;
         this.method_token = method_token;
         this.current_arguments = current_arguments;
+        this.inverted_parameters = new ArrayList<>();
     }
 
     @Override
@@ -47,7 +51,8 @@ public class StaticMethodAccessNode extends AccessNode {
         if (class_ == null)
             throw new SemanticException(token, "class "+token.getLexeme()+" is not declared");
 
-        Method method = class_.getMethod(method_token.getLexeme());
+        this.method = class_.getMethod(method_token.getLexeme());
+
         if(method == null)
             throw new SemanticException(method_token, "method "+method_token.getLexeme()+" is not declared");
         else if( SymbolTable.current_method.getStatic_method() != null
@@ -69,6 +74,9 @@ public class StaticMethodAccessNode extends AccessNode {
 
         }
 
+        if(inverted_parameters.size() == 0)
+            this.set_inverted_parameters();
+
         if(chainedNode == null)
             return (Type) method.getMethod_type();
         else
@@ -80,4 +88,37 @@ public class StaticMethodAccessNode extends AccessNode {
     public void setChainedNode(ChainedNode chainedNode) {
         this.chainedNode = chainedNode;
     }
+
+    @Override
+    public void generate() {
+
+        if(method.getStatic_method() != null){
+
+            if(!method.getMethod_type().same_type(new VoidType()))
+                SymbolTable.generate("RMEM 1");
+
+            for(ExpressionNode expressionNode : inverted_parameters)
+                expressionNode.generate();
+
+            SymbolTable.generate("PUSH "+method.method_label());
+            SymbolTable.generate("CALL");
+
+        }
+
+        if(chainedNode != null){
+            chainedNode.set_same_side(this.is_left_side_assignable);
+            chainedNode.generate();
+        }
+
+    }
+
+    private void set_inverted_parameters(){
+        int j = current_arguments.size() - 1;
+
+        for(int i = 0; i < current_arguments.size(); i++){
+            inverted_parameters.add(current_arguments.get(j));
+            j--;
+        }
+    }
+
 }

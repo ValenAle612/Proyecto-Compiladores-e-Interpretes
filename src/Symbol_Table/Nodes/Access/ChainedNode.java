@@ -7,6 +7,8 @@ public abstract class ChainedNode {
 
     protected ChainedNode chainedNode;
 
+    protected boolean is_left_side_assignable = false;
+
     public void insertChainedNode(ChainedNode chainedNode){
         this.chainedNode = chainedNode;
     }
@@ -16,5 +18,11 @@ public abstract class ChainedNode {
     public abstract boolean can_be_called();
 
     public abstract boolean can_be_assigned();
+
+    public abstract void generate();
+
+    public void set_same_side(boolean left_side){
+        this.is_left_side_assignable = left_side;
+    }
 
 }

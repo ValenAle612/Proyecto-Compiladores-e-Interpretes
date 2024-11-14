@@ -9,13 +9,17 @@ import Syntax_Analyzer.SyntaxAnalyzer;
 import Syntax_Analyzer.SyntaxException;
 
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.util.List;
 
 public class Main {
 
     public static void main( String[] args ){
         try{
             String inputFile = args[0];
+            String outputFile = args[1];
+
             boolean errors = false;
 
             if( args.length > 2 ){
@@ -34,6 +38,10 @@ public class Main {
                     SymbolTable.getInstance().consolidate();
                     SymbolTable.getInstance().exists_static_main_method();
                     SymbolTable.getInstance().statement_check();
+
+                    SymbolTable.getInstance().generate_code();
+                    create_file(outputFile);
+
                     SymbolTable.clean();
 
                     if(!errors)
@@ -50,6 +58,15 @@ public class Main {
         }catch( ArrayIndexOutOfBoundsException e ){
             System.out.println(" ERROR: file name not specified or incorrect number of parameters ");
         }
+    }
+
+    private static void create_file(String outputFile) throws IOException {
+        List<String> instructions = SymbolTable.instruction_list;
+        FileWriter fileWriter = new FileWriter(outputFile);
+
+        for(String line: instructions)
+            fileWriter.write(line);
+        fileWriter.close();
     }
 
 }

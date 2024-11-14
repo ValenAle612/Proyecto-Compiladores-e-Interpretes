@@ -9,4 +9,9 @@ public class EmptyStatementNode extends StatementNode{
 
     }
 
+    @Override
+    public void generate() {
+
+    }
+
 }

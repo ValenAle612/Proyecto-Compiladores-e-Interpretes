@@ -699,12 +699,12 @@ public class SyntaxAnalyzer {
         match("(", TokenId.ps_openParenthesis);
         Token token = currentToken;
         LocalVarNode localVarNode = new LocalVarNode(token);
-        localVarNode.setType(get_type_of_local_var(localVarNode));
+        localVarNode.set_type(get_type_of_local_var(localVarNode));
         match("method or variable identifier", TokenId.method_var_id);
         match(")", TokenId.ps_closeParenthesis);
         match("{", TokenId.ps_openBrace);
         SwitchNode switchNode = new SwitchNode(localVarNode);
-        List<CaseNode> cases = switch_list_statement(localVarNode.getType());
+        List<CaseNode> cases = switch_list_statement(localVarNode.get_type());
         switchNode.setCases(cases);
         StatementNode default_case = default_case_optional_statement();
         switchNode.setDefaultCase(default_case);
@@ -720,9 +720,9 @@ public class SyntaxAnalyzer {
         Parameter parameter_var = current_method.getParameter(localVarNode.getToken().getLexeme());
 
         if(attribute_var != null) {
-            return attribute_var.getAttribute_type();
+            return attribute_var.get_type();
         }else if(parameter_var != null){
-            return parameter_var.getParameter_type();
+            return parameter_var.get_type();
         }else{
             return null;
         }

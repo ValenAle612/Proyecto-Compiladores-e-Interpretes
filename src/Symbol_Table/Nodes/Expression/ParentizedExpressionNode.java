@@ -3,6 +3,7 @@ package Symbol_Table.Nodes.Expression;
 import Symbol_Table.Nodes.Access.AccessNode;
 import Symbol_Table.Nodes.Access.ChainedNode;
 import Symbol_Table.SemanticException;
+import Symbol_Table.SymbolTable;
 import Symbol_Table.Types.Type;
 
 public class ParentizedExpressionNode extends AccessNode {
@@ -35,6 +36,16 @@ public class ParentizedExpressionNode extends AccessNode {
             return chainedNode.can_be_assigned();
         else
             return false;
+    }
+
+    @Override
+    public void generate() {
+        expressionNode.generate();
+
+        if(chainedNode != null){
+            chainedNode.set_same_side(this.is_left_side_assignable);
+            chainedNode.generate();
+        }
     }
 
     @Override

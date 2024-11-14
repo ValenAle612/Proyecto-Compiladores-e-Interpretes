@@ -10,14 +10,16 @@ import Symbol_Table.Types.Type;
 public class BuilderAccessNode extends AccessNode{
 
     protected Token token;
+    protected ConcreteClass concrete_class;
 
     public BuilderAccessNode(Token token){
         this.token = token;
     }
 
     public Type verify() throws SemanticException {
-        ConcreteClass concreteClass = SymbolTable.getInstance().getClass(token.getLexeme());
-        if(concreteClass == null)
+        concrete_class = SymbolTable.getInstance().getClass(token.getLexeme());
+
+        if(concrete_class == null)
             throw new SemanticException(token, "trying to create a constructor of a non-existent class");
 
         Type type = new ClassType(token);
@@ -47,4 +49,17 @@ public class BuilderAccessNode extends AccessNode{
     public void setChainedNode(ChainedNode chainedNode) {
         this.chainedNode = chainedNode;
     }
+
+    @Override
+    public void generate() {
+        SymbolTable.generate("RMEM 1");
+        int amount_to_psuh = concrete_class.getAttributes().size() + 1;
+        SymbolTable.generate("PUSH " + amount_to_psuh);
+        SymbolTable.generate("PUSH simple_malloc");
+        SymbolTable.generate("CALL");
+        SymbolTable.generate("DUP");
+        SymbolTable.generate("PUSH VT_"+concrete_class.getToken().getLexeme());
+        SymbolTable.generate("STOREREF 0");
+    }
+
 }

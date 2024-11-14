@@ -2,6 +2,7 @@ package Symbol_Table.Nodes.Expression;
 
 import Lexical_Analyzer.Token;
 import Symbol_Table.SemanticException;
+import Symbol_Table.SymbolTable;
 import Symbol_Table.Types.BooleanType;
 import Symbol_Table.Types.ConcreteType;
 import Symbol_Table.Types.IntType;
@@ -18,6 +19,13 @@ public class GreaterEqualsBinaryExpNode extends BinaryExpressionNode {
             return new BooleanType();
         else
             throw new SemanticException(token, "the binary operator "+token.getLexeme()+" it is only for integer type");
+    }
+
+    @Override
+    public void generate() {
+        left_side.generate();
+        right_side.generate();
+        SymbolTable.generate("GE");
     }
 
     @Override

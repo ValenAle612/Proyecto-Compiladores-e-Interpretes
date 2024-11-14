@@ -31,6 +31,13 @@ public class ExpAssignmentNode extends AssignmentNode {
     }
 
     @Override
+    public void generate() {
+        expressionNode.generate();
+        left_node.set_as_left_side();
+        left_node.generate();
+    }
+
+    @Override
     public void insert_expression(ExpressionNode expressionNode) {
         this.expressionNode = expressionNode;
     }

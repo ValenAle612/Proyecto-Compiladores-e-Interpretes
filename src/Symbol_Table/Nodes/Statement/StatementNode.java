@@ -6,4 +6,6 @@ public abstract class StatementNode {
 
     public abstract void verify() throws SemanticException;
 
+    public abstract void generate();
+
 }

@@ -43,4 +43,6 @@ public abstract class Class {
 
     public abstract ArrayList<String> ancestors() throws SemanticException;
 
+    public abstract void generate();
+
 }

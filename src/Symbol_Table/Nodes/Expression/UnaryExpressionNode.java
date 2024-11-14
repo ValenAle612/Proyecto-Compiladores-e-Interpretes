@@ -2,6 +2,7 @@ package Symbol_Table.Nodes.Expression;
 
 import Lexical_Analyzer.Token;
 import Symbol_Table.SemanticException;
+import Symbol_Table.SymbolTable;
 import Symbol_Table.Types.BooleanType;
 import Symbol_Table.Types.IntType;
 import Symbol_Table.Types.Type;
@@ -39,6 +40,16 @@ public class UnaryExpressionNode extends ExpressionNode {
         } else
             return operandNode.verify();
 
+    }
+
+    @Override
+    public void generate() {
+        operandNode.generate();
+
+        if(token.getLexeme().equals("-"))
+            SymbolTable.generate("NEG ; Unary minus");
+        else if (!token.getLexeme().equals("+"))
+            SymbolTable.generate("NOT ; Unary negation");
     }
 
 }

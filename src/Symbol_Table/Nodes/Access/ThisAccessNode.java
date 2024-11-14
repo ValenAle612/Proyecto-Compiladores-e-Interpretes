@@ -49,4 +49,13 @@ public class ThisAccessNode extends AccessNode{
         this.chainedNode = chainedNode;
     }
 
+    @Override
+    public void generate() {
+        SymbolTable.generate("LOAD 3");
+        if(chainedNode !=null){
+            chainedNode.set_same_side(this.is_left_side_assignable);
+            chainedNode.generate();
+        }
+    }
+
 }

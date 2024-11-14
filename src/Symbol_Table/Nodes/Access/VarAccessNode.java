@@ -15,6 +15,9 @@ import java.util.List;
 public class VarAccessNode extends AccessNode{
 
     protected Token token;
+    protected LocalVarNode localVarNode;
+    protected Attribute attribute;
+    protected Parameter formal_parameter;
 
     public VarAccessNode(Token token){
         this.token = token;
@@ -22,7 +25,7 @@ public class VarAccessNode extends AccessNode{
 
     public Type verify() throws SemanticException{
         Type variable_type;
-        LocalVarNode localVarNode = null;
+        this.localVarNode = null;
 
         for(BlockNode blockNode: SymbolTable.block_stack){
             localVarNode = blockNode.getLocalVariable(token.getLexeme());
@@ -31,18 +34,18 @@ public class VarAccessNode extends AccessNode{
         }
 
         if(localVarNode != null)
-            variable_type = localVarNode.getType();
+            variable_type = localVarNode.get_type();
         else{
 
-            Parameter formal_parameter = SymbolTable.current_method.getParameter(token.getLexeme());
+            formal_parameter = SymbolTable.current_method.getParameter(token.getLexeme());
             if(formal_parameter != null)
-                variable_type = formal_parameter.getParameter_type();
+                variable_type = formal_parameter.get_type();
             else{
-                Attribute attribute = SymbolTable.current_class.getAttribute(token.getLexeme());
+                attribute = SymbolTable.current_class.getAttribute(token.getLexeme());
                 if(attribute != null) {
                     verify_is_not_private();
                     if(SymbolTable.current_method.getStatic_method() == null)
-                        variable_type = attribute.getAttribute_type();
+                        variable_type = attribute.get_type();
                     else
                         throw new SemanticException(token, "it cannot access an instance attribute in a static method");
                 } else
@@ -114,4 +117,46 @@ public class VarAccessNode extends AccessNode{
     public void setChainedNode(ChainedNode chainedNode) {
         this.chainedNode = chainedNode;
     }
+
+    @Override
+    public void generate() {
+
+        if(attribute != null){
+
+            SymbolTable.generate("LOAD 3");
+
+            if(!is_left_side_assignable || chainedNode != null){
+                SymbolTable.generate("LOADREF "+attribute.getOffset());
+            }else{
+                SymbolTable.generate("SWAP");
+                SymbolTable.generate("STOREREF "+attribute.getOffset());
+            }
+
+        }else if(formal_parameter != null){
+
+            if(!is_left_side_assignable || chainedNode != null)
+                SymbolTable.generate("LOAD "+formal_parameter.getOffset()
+                        +" ; parameter "+formal_parameter.getParameter_token().getLexeme());
+            else
+                SymbolTable.generate("STORE "+formal_parameter.getOffset()
+                        +" ; parameter "+formal_parameter.getParameter_token().getLexeme());
+
+        }else{
+
+            if(!is_left_side_assignable || chainedNode != null)
+                SymbolTable.generate("LOAD "+localVarNode.getOffset()
+                        +" ; local variable "+localVarNode.getToken().getLexeme());
+            else
+                SymbolTable.generate("STORE "+localVarNode.getOffset()
+                        +" ; local variable "+localVarNode.getToken().getLexeme());
+
+        }
+
+        if(chainedNode != null) {
+            chainedNode.set_same_side(is_left_side_assignable);
+            chainedNode.generate();
+        }
+
+    }
+
 }

@@ -23,6 +23,10 @@ public class CaseNode extends StatementNode{
         this.statement = statement;
     }
 
+    public OperandNode getLiteral(){
+        return literal;
+    }
+
     @Override
     public void verify() throws SemanticException {
 
@@ -32,6 +36,12 @@ public class CaseNode extends StatementNode{
 
         if(statement != null)
             statement.verify();
+    }
+
+    @Override
+    public void generate() {
+        if(statement != null)
+            statement.generate();
     }
 
 }

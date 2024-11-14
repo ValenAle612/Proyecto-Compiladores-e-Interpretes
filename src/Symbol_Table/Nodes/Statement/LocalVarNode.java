@@ -6,15 +6,19 @@ import Symbol_Table.Nodes.Statement.StatementNode;
 import Symbol_Table.SemanticException;
 import Symbol_Table.SymbolTable;
 import Symbol_Table.Types.Type;
+import Symbol_Table.VarEntry;
 
-public class LocalVarNode extends StatementNode {
+public class LocalVarNode extends StatementNode implements VarEntry {
 
     protected Token token;
     protected ExpressionNode expressionNode;
     protected Type type;
 
+    protected int offset;
+
     public LocalVarNode(Token token){
         this.token = token;
+        this.offset = -1;
     }
 
     public void setToken(Token token){
@@ -36,7 +40,7 @@ public class LocalVarNode extends StatementNode {
     @Override
     public void verify() throws SemanticException{
         if(this.expressionNode != null)
-            this.setType(expressionNode.verify());
+            this.set_type(expressionNode.verify());
 
         for(BlockNode blockNode : SymbolTable.block_stack) {
             if(blockNode.getLocalVariable(token.getLexeme()) != null)
@@ -53,12 +57,35 @@ public class LocalVarNode extends StatementNode {
 
     }
 
-    public void setType(Type type){
+    @Override
+    public void generate() {
+        SymbolTable.instruction_list.add("RMEM 1; Saving space for local variable "+token.getLexeme());
+        if(expressionNode != null) {
+            expressionNode.generate();
+            SymbolTable.generate("STORE "+offset);
+        }
+    }
+
+    public void set_type(Type type){
         this.type = type;
     }
 
-    public Type getType(){
+    @Override
+    public boolean is_attribute() {
+        return false;
+    }
+
+    @Override
+    public Type get_type() {
         return type;
     }
 
+    @Override
+    public int getOffset() {
+        return offset;
+    }
+
+    public void setOffset(int offset){
+        this.offset = offset;
+    }
 }

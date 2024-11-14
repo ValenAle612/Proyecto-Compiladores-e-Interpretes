@@ -13,6 +13,7 @@ public class ChainedVarAccessNode extends ChainedNode {
 
     protected Token token;
     protected ChainedNode chainedNode;
+    protected Attribute attribute;
 
     public ChainedVarAccessNode(Token token, ChainedNode chainedNode){
         this.token = token;
@@ -25,13 +26,13 @@ public class ChainedVarAccessNode extends ChainedNode {
         ConcreteClass class_ = SymbolTable.getInstance().getClass(type.getCurrentType());
         if(class_ != null){
 
-            Attribute attribute = class_.getAttribute(token.getLexeme());
+            this.attribute = class_.getAttribute(token.getLexeme());
             if(attribute != null){
                 if( attribute.getVisibility() == TokenId.kw_private
                         && !SymbolTable.current_class.getToken().getLexeme().equals(attribute.getClass_that_contains_the_attribute().getLexeme()) )
                     throw new SemanticException(token, "is not possible access to a private attribute, token: "+token.getLexeme());
                 else
-                    concreteType = attribute.getAttribute_type();
+                    concreteType = attribute.get_type();
             } else
                 throw new SemanticException(token, "attribute "+token.getLexeme()+" is not declared or it cannot be accessed from the current class");
 
@@ -59,6 +60,22 @@ public class ChainedVarAccessNode extends ChainedNode {
             return chainedNode.can_be_assigned();
         else
             return true;
+    }
+
+    @Override
+    public void generate(){
+        if(!is_left_side_assignable || chainedNode != null)
+            SymbolTable.generate("LOADREF "+attribute.getOffset());
+        else{
+            SymbolTable.generate("SWAP");
+            SymbolTable.generate("STOREREF "+attribute.getOffset());
+        }
+
+        if(chainedNode != null){
+            chainedNode.set_same_side(this.is_left_side_assignable);
+            chainedNode.generate();
+        }
+
     }
 
 }

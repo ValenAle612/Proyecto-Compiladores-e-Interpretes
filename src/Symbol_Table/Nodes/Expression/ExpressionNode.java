@@ -7,4 +7,6 @@ public abstract class ExpressionNode {
 
     public abstract Type verify() throws SemanticException;
 
+    public abstract void generate();
+
 }

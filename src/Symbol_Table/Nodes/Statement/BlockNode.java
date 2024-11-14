@@ -13,6 +13,8 @@ public class BlockNode extends StatementNode {
     private List<StatementNode> statements;
     private Map<String, LocalVarNode> local_variables;
 
+    private int local_var_offset;
+
     public BlockNode(){
         statements = new ArrayList<>();
         local_variables = new HashMap<>();
@@ -55,6 +57,28 @@ public class BlockNode extends StatementNode {
         }
 
         SymbolTable.delete_current_block();
+    }
+
+    @Override
+    public void generate(){
+        SymbolTable.save_current_block(this);
+
+        for(StatementNode statementNode : statements)
+            statementNode.generate();
+
+        SymbolTable.delete_current_block();
+        SymbolTable.generate("FMEM "+local_variables.size()+
+                " ; free space for local variables, "
+                + local_variables.size() +
+                " memory spaces were freed ");
+    }
+
+    public int getLocal_var_offset(){
+        return local_var_offset;
+    }
+
+    public void setLocal_var_offset(int local_var_offset){
+        this.local_var_offset = local_var_offset;
     }
 
 }

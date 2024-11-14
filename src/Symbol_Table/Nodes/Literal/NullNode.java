@@ -1,6 +1,7 @@
 package Symbol_Table.Nodes.Literal;
 
 import Lexical_Analyzer.Token;
+import Symbol_Table.SymbolTable;
 import Symbol_Table.Types.NullType;
 import Symbol_Table.Nodes.Expression.OperandNode;
 import Symbol_Table.SemanticException;
@@ -16,6 +17,11 @@ public class NullNode extends OperandNode{
 
     public Type verify() throws SemanticException{
         return new NullType();
+    }
+
+    @Override
+    public void generate() {
+        SymbolTable.generate("PUSH "+0+" ; push null");
     }
 
 }

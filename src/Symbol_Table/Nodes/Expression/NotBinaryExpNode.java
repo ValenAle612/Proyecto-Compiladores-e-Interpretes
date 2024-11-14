@@ -2,6 +2,7 @@ package Symbol_Table.Nodes.Expression;
 
 import Lexical_Analyzer.Token;
 import Symbol_Table.SemanticException;
+import Symbol_Table.SymbolTable;
 import Symbol_Table.Types.BooleanType;
 import Symbol_Table.Types.Type;
 
@@ -20,6 +21,13 @@ public class NotBinaryExpNode extends BinaryExpressionNode {
         else
             throw new SemanticException(token, "binary operator "+ token.getLexeme() +" only works with 'conforming' type");
 
+    }
+
+    @Override
+    public void generate() {
+        left_side.generate();
+        right_side.generate();
+        SymbolTable.generate("NE");
     }
 
     @Override

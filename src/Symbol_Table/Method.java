@@ -16,8 +16,12 @@ public class Method {
     private TokenId static_method;
     private MethodType method_type;
 
+    private boolean is_dynamic;
     private Token associated_class;
     private BlockNode blockNode;
+
+    private int offset, parameters_offset;
+    private boolean is_stated_in_class;
 
     public Method(HashMap<String, Parameter> parameters, ArrayList<Parameter> parameters_list, Token method_token, TokenId static_method,
                   MethodType method_type, Token associated_class){
@@ -28,6 +32,18 @@ public class Method {
         this.method_type = method_type;
         this.associated_class = associated_class;
         this.blockNode = new BlockNode();
+        this.is_stated_in_class = true;
+
+        if(static_method != null){
+            this.is_dynamic = false;
+            this.parameters_offset = 3;
+        }else{
+            this.is_dynamic = true;
+            this.parameters_offset = 4;
+        }
+
+        this.offset = -1;
+
     }
 
     public Token getAssociated_class(){
@@ -121,7 +137,7 @@ public class Method {
     }
 
     public boolean verify_parameter(Parameter parameter_x, Parameter parameter_y){
-        return parameter_x.getParameter_type().getCurrentType().equals( parameter_y.getParameter_type().getCurrentType() );
+        return parameter_x.get_type().getCurrentType().equals( parameter_y.get_type().getCurrentType() );
     }
 
     public void insert_block(BlockNode blockNode){
@@ -141,7 +157,7 @@ public class Method {
         List<Type> formal_parameters_type_list = new ArrayList<>();
 
         for( Parameter formalParameter : parameters_list )
-            formal_parameters_type_list.add( formalParameter.getParameter_type() );
+            formal_parameters_type_list.add( formalParameter.get_type() );
 
         int i = 0;
         boolean comforming_parameters = true;
@@ -161,6 +177,71 @@ public class Method {
 
         return comforming_parameters;
 
+    }
+
+    public boolean is_stated_in_class(Token class_token){
+        return class_token == associated_class;
+    }
+
+    public void setAssociated_class(Token associated_class){
+        this.associated_class = associated_class;
+    }
+
+    public boolean is_dynamic(){
+        return is_dynamic;
+    }
+
+    public int getOffset(){
+        return offset;
+    }
+
+    public void setOffset(int offset){
+        this.offset = offset;
+    }
+
+    public int getParameters_offset(){
+        return parameters_offset;
+    }
+
+    public void setParameters_offset(int parameters_offset){
+        this.parameters_offset = parameters_offset;
+    }
+
+    public int getReturnOffset(){
+        if(is_dynamic)
+            return 4 + parameters_list.size();
+        else
+            return 3 + parameters_list.size();
+    }
+
+    public int getOffsetLine(){
+        if(is_dynamic)
+            return parameters_list.size() + 1;
+        else
+            return parameters_list.size();
+    }
+
+    public void generate(){
+        SymbolTable.current_method = this;
+        SymbolTable.generate("LOADFP");
+        SymbolTable.generate("LOADSP");
+        SymbolTable.generate("STOREFP");
+
+        blockNode.generate();
+
+        SymbolTable.generate("STOREFP");
+        if( this.is_dynamic )
+            SymbolTable.generate("RET "+(parameters_list.size() + 1));
+        else
+            SymbolTable.generate("RET "+parameters_list.size());
+    }
+
+    public String method_label(){
+        String label = associated_class.getLexeme()+method_token.getLexeme();
+        for(Parameter parameter : parameters.values())
+            label = label + parameter.get_type().getCurrentType();
+
+        return label;
     }
 
 }

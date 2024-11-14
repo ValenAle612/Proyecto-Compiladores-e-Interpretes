@@ -16,13 +16,18 @@ public class SymbolTable {
     public static Class current_class;
     public static Method current_method;
     public static Attribute current_attribute;
+
     public static boolean is_there_a_main_class;
+    public static Method main_method;
+
     public static List<BlockNode> block_stack;
+    public static List<String> instruction_list;
 
     private SymbolTable() throws SemanticException {
 
         classes = new HashMap<String, ConcreteClass>();
         block_stack = new ArrayList<>();
+        instruction_list = new ArrayList<>();
         is_there_a_main_class = false;
 
         Token object = new Token(TokenId.class_id, "Object", 0);
@@ -208,6 +213,7 @@ public class SymbolTable {
                             && method.getMethod_token().getLexeme().equals("main")
                             && method.getParameters().isEmpty() ){
                         is_there_a_main_class = true;
+                        main_method = method;
                         break;
                     }
             }
@@ -216,6 +222,51 @@ public class SymbolTable {
         if( !is_there_a_main_class )
             throw new SemanticException( main_token, "No static main() method without parameters was declared." );
 
+    }
+
+    public void generate_code() throws SemanticException{
+        initial_generate();
+
+        for(ConcreteClass concreteClass : classes.values())
+            concreteClass.generate();
+    }
+
+    private void initial_generate(){
+        //code
+        instruction_list.add(".CODE");
+        instruction_list.add("PUSH simple_heap_init");
+        instruction_list.add("CALL");
+        instruction_list.add("PUSH "+
+                main_method.getAssociated_class().getLexeme()+
+                main_method.getMethod_token().getLexeme());
+        instruction_list.add("CALL");
+        instruction_list.add("HALT");
+        instruction_list.add("");
+
+        instruction_list.add("simple_heap_init");
+        instruction_list.add("RET 0");
+        instruction_list.add("");
+
+        //malloc
+        instruction_list.add("simple_malloc");
+        instruction_list.add("LOADFP ; Unit initialization");
+        instruction_list.add("LOADSP");
+        instruction_list.add("STOREFP ; Ends RA initialization");
+        instruction_list.add("LOADHL ; hl");
+        instruction_list.add("DUP ; hl");
+        instruction_list.add("PUSH 1 ; 1");
+        instruction_list.add("ADD ; hl + 1");
+        instruction_list.add("STORE 4 ; Stores result (pointer to the base of the block)");
+        instruction_list.add("LOAD 3 ; Loads the number of cells to allocate (parameter)");
+        instruction_list.add("ADD");
+        instruction_list.add("STOREHL ; Moves the heap limit (hl)");
+        instruction_list.add("STOREFP");
+        instruction_list.add("RET 1 ; Returns, removing the parameter");
+        instruction_list.add("");
+    }
+
+    public static void generate(String instruction){
+        instruction_list.add(instruction);
     }
 
 }

@@ -4,6 +4,7 @@ import Lexical_Analyzer.Token;
 import Symbol_Table.Nodes.Expression.ExpressionNode;
 import Symbol_Table.Types.Type;
 import Syntax_Analyzer.SyntaxException;
+import org.w3c.dom.Attr;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,6 +23,10 @@ public class ConcreteClass extends Class{
 
     private Builder class_builder;
 
+    private Map<Integer, Attribute> attributes_offset;
+    private Map<Integer, Method> methods_offset;
+    private int offsetVT, offsetCIR;
+
     public ConcreteClass(Token class_id){
         this.class_token = class_id;
         this.attributes = new HashMap<String, Attribute>();
@@ -30,10 +35,14 @@ public class ConcreteClass extends Class{
         this.class_builder = new Builder(this.class_token);
         this.no_circular_inheritance = false;
         this. is_consolidated = false;
+        this.methods_offset = new HashMap<>();
+        this.attributes_offset = new HashMap<>();
 
         if(class_token.getLexeme() == "Object"){
             is_consolidated = true;
             no_circular_inheritance = true;
+            offsetVT = 0;
+            offsetCIR  = 0;
         }
 
     }
@@ -260,6 +269,88 @@ public class ConcreteClass extends Class{
 
         parent_class.remove(this);
 
+    }
+
+    public int getOffsetVT(){
+        return offsetVT;
+    }
+
+    public void setOffsetVT(int offsetVT){
+        this.offsetVT = offsetVT;
+    }
+
+    public int getOffsetCIR(){
+        return offsetCIR;
+    }
+
+    public void setOffsetCIR(int offsetCIR){
+        this.offsetCIR = offsetCIR;
+    }
+
+    @Override
+    public void generate(){
+        SymbolTable.current_class = this;
+        generate_data();
+        generate_code();
+    }
+
+    private void generate_data(){
+        SymbolTable.generate(".DATA");
+        String VT_labels;
+        if(methods_offset.size() != 0) {
+            VT_labels = "VT_" + class_token.getLexeme() + ": DW";
+            for (int offset = 0; offset < methods_offset.size(); offset++) {
+                Method method = methods_offset.get(offset);
+                VT_labels += method.method_label() + ",";
+            }
+
+            VT_labels = VT_labels.substring(0, VT_labels.length() - 1);
+        }else{
+            VT_labels = "VT_"+class_token.getLexeme()+": NOP";
+        }
+
+        SymbolTable.generate(VT_labels);
+    }
+
+    private void generate_code() {
+        SymbolTable.generate(".CODE");
+        String method_code_label;
+        for (Method method : methods.values()){
+            if ( method.getAssociated_class().getLexeme().equals( this.class_token.getLexeme() ) ) {
+                method_code_label = method.method_label()+":";
+
+                SymbolTable.generate(method_code_label);
+                method.generate();
+
+                SymbolTable.generate("");
+            }
+        }
+    }
+
+    private void setMethodsOffset(ConcreteClass concrete_class){
+        this.offsetVT = concrete_class.getOffsetVT();
+        for(Method method : methods.values()){
+            if(method.is_dynamic()){
+                if(method.getOffset() == -1){
+                    method.setOffset(offsetVT);
+                    offsetVT++;
+                }
+
+                methods_offset.put(method.getOffset(), method);
+            }
+        }
+    }
+
+    private void setAttributesOffset(ConcreteClass concrete_class){
+        this.offsetCIR = concrete_class.getOffsetCIR();
+        for(Attribute attribute : attributes.values()){
+            if(attribute.getOffset() == -1){
+                attribute.setOffset(offsetCIR);
+                offsetCIR++;
+            }
+
+            attributes_offset.put(attribute.getOffset(), attribute);
+        }
     }
 
 }

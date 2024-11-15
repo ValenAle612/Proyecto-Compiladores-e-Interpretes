@@ -44,6 +44,9 @@ public class BlockNode extends StatementNode {
         if(SymbolTable.current_method.getParameter(localVarNode.getToken().getLexeme()) != null)
             throw new SemanticException(localVarNode.getToken(), "variable is duplicated, it already exists a parameter with same name");
 
+        localVarNode.setOffset(local_var_offset);
+        local_var_offset--;
+
         local_variables.put(localVarNode.getToken().getLexeme(), localVarNode);
 
     }

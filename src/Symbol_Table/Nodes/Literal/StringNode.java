@@ -38,6 +38,7 @@ public class StringNode extends OperandNode {
         SymbolTable.generate("DUP ; duplicate the reference at the"+
                 " beggining of the String since STOREREF consumes it");
         SymbolTable.generate("PUSH "+0+" ; push the terminator");
+        SymbolTable.generate("STOREREF "+string.length());
     }
 
 }

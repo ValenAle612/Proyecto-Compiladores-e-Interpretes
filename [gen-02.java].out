@@ -1,0 +1,185 @@
+.CODE
+PUSH simple_heap_init
+CALL
+PUSH Initmain
+CALL
+HALT
+
+simple_heap_init:
+RET 0
+
+simple_malloc:
+LOADFP ; Unit initialization
+LOADSP
+STOREFP ; Ends RA initialization
+LOADHL ; hl
+DUP ; hl
+PUSH 1 ; 1
+ADD ; hl + 1
+STORE 4 ; Stores result (pointer to the base of the block)
+LOAD 3 ; Loads the number of cells to allocate (parameter)
+ADD
+STOREHL ; Moves the heap limit (hl)
+STOREFP
+RET 1 ; Returns, removing the parameter
+
+.DATA
+VT_A: DW Amc
+.CODE
+Amc:
+LOADFP
+LOADSP
+STOREFP
+PUSH 1234 ; push integer
+PUSH ObjectdebugPrintint
+CALL
+PUSH 33 ; push integer
+LOAD 3
+SWAP
+STOREREF 1
+LOAD 3
+LOADREF 1
+PUSH ObjectdebugPrintint
+CALL
+FMEM 0 ; free space for local variables, 0 memory spaces were freed 
+STOREFP
+RET 1
+
+.DATA
+VT_Init: NOP
+.CODE
+Initmain:
+LOADFP
+LOADSP
+STOREFP
+RMEM 1; Saving space for local variable a
+RMEM 1
+PUSH 2
+PUSH simple_malloc
+CALL
+DUP
+PUSH VT_A
+STOREREF 0
+STORE 0
+LOAD 0 ; local variable a
+DUP
+LOADREF 0
+LOADREF 0
+CALL
+FMEM 1 ; free space for local variables, 1 memory spaces were freed 
+STOREFP
+RET 0
+
+.DATA
+VT_Object: NOP
+.CODE
+ObjectdebugPrintint:
+LOADFP
+LOADSP
+STOREFP
+LOAD 3
+IPRINT
+STOREFP
+RET 1 ; Returns deleting the parameter
+
+.DATA
+VT_String: NOP
+.CODE
+.DATA
+VT_System: NOP
+.CODE
+SystemprintCchar:
+LOADFP
+LOADSP
+STOREFP
+LOAD 3
+CPRINT
+STOREFP
+RET 1 ; Returns deleting the parameter
+
+SystemprintSString:
+LOADFP
+LOADSP
+STOREFP
+LOAD 3
+SPRINT
+STOREFP
+RET 1 ; Returns deleting the parameter
+
+Systemprintln:
+LOADFP
+LOADSP
+STOREFP
+PRNLN
+STOREFP
+RET 0 ; No parameters
+
+SystemprintClnchar:
+LOADFP
+LOADSP
+STOREFP
+LOAD 3
+CPRINT
+PRNLN
+STOREFP
+RET 1 ; Returns deleting the parameter
+
+SystemprintSlnString:
+LOADFP
+LOADSP
+STOREFP
+LOAD 3
+SPRINT
+PRNLN
+STOREFP
+RET 1 ; Returns deleting the parameter
+
+Systemread:
+LOADFP
+LOADSP
+STOREFP
+READ   ; read the integer 
+PUSH 48
+SUB
+STORE 3
+STOREFP
+RET 0 ; No parameters
+
+SystemprintBboolean:
+LOADFP
+LOADSP
+STOREFP
+LOAD 3
+BPRINT
+STOREFP
+RET 1 ; Returns deleting the parameter
+
+SystemprintIlnint:
+LOADFP
+LOADSP
+STOREFP
+LOAD 3
+IPRINT
+PRNLN
+STOREFP
+RET 1 ; Returns deleting the parameter
+
+SystemprintIint:
+LOADFP
+LOADSP
+STOREFP
+LOAD 3
+IPRINT
+STOREFP
+RET 1 ; Returns deleting the parameter
+
+SystemprintBlnboolean:
+LOADFP
+LOADSP
+STOREFP
+LOAD 3
+BPRINT
+PRNLN
+STOREFP
+RET 1 ; Returns deleting the parameter
+

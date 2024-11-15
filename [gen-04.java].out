@@ -1,0 +1,279 @@
+.CODE
+PUSH simple_heap_init
+CALL
+PUSH Initmain
+CALL
+HALT
+
+simple_heap_init:
+RET 0
+
+simple_malloc:
+LOADFP ; Unit initialization
+LOADSP
+STOREFP ; Ends RA initialization
+LOADHL ; hl
+DUP ; hl
+PUSH 1 ; 1
+ADD ; hl + 1
+STORE 4 ; Stores result (pointer to the base of the block)
+LOAD 3 ; Loads the number of cells to allocate (parameter)
+ADD
+STOREHL ; Moves the heap limit (hl)
+STOREFP
+RET 1 ; Returns, removing the parameter
+
+.DATA
+VT_A: DW Am1,Asetallint
+.CODE
+Am1:
+LOADFP
+LOADSP
+STOREFP
+LOAD 3
+LOADREF 1
+PUSH ObjectdebugPrintint
+CALL
+LOAD 3
+LOADREF 2
+PUSH ObjectdebugPrintint
+CALL
+LOAD 3
+LOADREF 3
+PUSH SystemprintSlnString
+CALL
+FMEM 0 ; free space for local variables, 0 memory spaces were freed 
+STOREFP
+RET 1
+
+Asetallint:
+LOADFP
+LOADSP
+STOREFP
+LOAD 4 ; parameter p1
+LOAD 3
+SWAP
+STOREREF 1
+LOAD 3
+LOADREF 1
+PUSH 2 ; push integer
+MUL
+LOAD 3
+SWAP
+STOREREF 2
+RMEM 1 ; pointer to the String at .HEAP
+PUSH 5
+PUSH simple_malloc
+CALL
+DUP ; duplicate the reference at the beggining of the String since STOREREF consumes it
+PUSH 'h' 
+STOREREF 0 ; save the pushed letter
+DUP ; duplicate the reference at the beggining of the String since STOREREF consumes it
+PUSH 'o' 
+STOREREF 1 ; save the pushed letter
+DUP ; duplicate the reference at the beggining of the String since STOREREF consumes it
+PUSH 'l' 
+STOREREF 2 ; save the pushed letter
+DUP ; duplicate the reference at the beggining of the String since STOREREF consumes it
+PUSH 'a' 
+STOREREF 3 ; save the pushed letter
+DUP ; duplicate the reference at the beggining of the String since STOREREF consumes it
+PUSH 0 ; push the terminator
+STOREREF 4
+LOAD 3
+SWAP
+STOREREF 3
+FMEM 0 ; free space for local variables, 0 memory spaces were freed 
+STOREFP
+RET 2
+
+.DATA
+VT_B: DW Am1,Asetallint,Bseta4,Bm2
+.CODE
+Bseta4:
+LOADFP
+LOADSP
+STOREFP
+PUSH 4000 ; push integer
+LOAD 3
+SWAP
+STOREREF 4
+PUSH 55 ; push integer
+LOAD 3
+SWAP
+STOREREF 5
+FMEM 0 ; free space for local variables, 0 memory spaces were freed 
+STOREFP
+RET 1
+
+Bm2:
+LOADFP
+LOADSP
+STOREFP
+LOAD 3
+LOADREF 4
+PUSH ObjectdebugPrintint
+CALL
+LOAD 3
+LOADREF 5
+PUSH ObjectdebugPrintint
+CALL
+FMEM 0 ; free space for local variables, 0 memory spaces were freed 
+STOREFP
+RET 1
+
+.DATA
+VT_Init: NOP
+.CODE
+Initmain:
+LOADFP
+LOADSP
+STOREFP
+RMEM 1; Saving space for local variable x
+RMEM 1
+PUSH 6
+PUSH simple_malloc
+CALL
+DUP
+PUSH VT_B
+STOREREF 0
+STORE 0
+LOAD 0 ; local variable x
+DUP
+LOADREF 0
+LOADREF 2
+CALL
+LOAD 0 ; local variable x
+PUSH 1234 ; push integer
+SWAP
+DUP
+LOADREF 0
+LOADREF 1
+CALL
+LOAD 0 ; local variable x
+DUP
+LOADREF 0
+LOADREF 0
+CALL
+LOAD 0 ; local variable x
+DUP
+LOADREF 0
+LOADREF 3
+CALL
+FMEM 1 ; free space for local variables, 1 memory spaces were freed 
+STOREFP
+RET 0
+
+.DATA
+VT_Object: NOP
+.CODE
+ObjectdebugPrintint:
+LOADFP
+LOADSP
+STOREFP
+LOAD 3
+IPRINT
+STOREFP
+RET 1 ; Returns deleting the parameter
+
+.DATA
+VT_String: NOP
+.CODE
+.DATA
+VT_System: NOP
+.CODE
+SystemprintCchar:
+LOADFP
+LOADSP
+STOREFP
+LOAD 3
+CPRINT
+STOREFP
+RET 1 ; Returns deleting the parameter
+
+SystemprintSString:
+LOADFP
+LOADSP
+STOREFP
+LOAD 3
+SPRINT
+STOREFP
+RET 1 ; Returns deleting the parameter
+
+Systemprintln:
+LOADFP
+LOADSP
+STOREFP
+PRNLN
+STOREFP
+RET 0 ; No parameters
+
+SystemprintClnchar:
+LOADFP
+LOADSP
+STOREFP
+LOAD 3
+CPRINT
+PRNLN
+STOREFP
+RET 1 ; Returns deleting the parameter
+
+SystemprintSlnString:
+LOADFP
+LOADSP
+STOREFP
+LOAD 3
+SPRINT
+PRNLN
+STOREFP
+RET 1 ; Returns deleting the parameter
+
+Systemread:
+LOADFP
+LOADSP
+STOREFP
+READ   ; read the integer 
+PUSH 48
+SUB
+STORE 3
+STOREFP
+RET 0 ; No parameters
+
+SystemprintBboolean:
+LOADFP
+LOADSP
+STOREFP
+LOAD 3
+BPRINT
+STOREFP
+RET 1 ; Returns deleting the parameter
+
+SystemprintIlnint:
+LOADFP
+LOADSP
+STOREFP
+LOAD 3
+IPRINT
+PRNLN
+STOREFP
+RET 1 ; Returns deleting the parameter
+
+SystemprintIint:
+LOADFP
+LOADSP
+STOREFP
+LOAD 3
+IPRINT
+STOREFP
+RET 1 ; Returns deleting the parameter
+
+SystemprintBlnboolean:
+LOADFP
+LOADSP
+STOREFP
+LOAD 3
+BPRINT
+PRNLN
+STOREFP
+RET 1 ; Returns deleting the parameter
+

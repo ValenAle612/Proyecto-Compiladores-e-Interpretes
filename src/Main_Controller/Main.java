@@ -65,7 +65,7 @@ public class Main {
         FileWriter fileWriter = new FileWriter(outputFile);
 
         for(String line: instructions)
-            fileWriter.write(line);
+            fileWriter.write(line+"\n");
         fileWriter.close();
     }
 

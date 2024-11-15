@@ -106,8 +106,11 @@ public class Method {
         if(method_type != null)
             method_type.check_existence();
 
-        for( Parameter parameter : parameters.values() )
+        for( Parameter parameter : parameters.values() ) {
             parameter.is_well_stated();
+            parameter.setOffset(parameters_offset);
+            parameters_offset++;
+        }
 
     }
 

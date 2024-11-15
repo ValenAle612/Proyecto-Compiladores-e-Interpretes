@@ -42,7 +42,7 @@ public class ConcreteClass extends Class{
             is_consolidated = true;
             no_circular_inheritance = true;
             offsetVT = 0;
-            offsetCIR  = 0;
+            offsetCIR  = 1;
         }
 
     }
@@ -186,7 +186,7 @@ public class ConcreteClass extends Class{
             current_parameters_type_list.add(current_parameter.verify());
 
         for(Method method : methods.values())
-            if(method.getMethod_token().getLexeme().equals(method_name)
+            if (method.getMethod_token().getLexeme().equals(method_name)
                     && method.conformance(current_parameters_type_list))
                 return method;
 
@@ -209,6 +209,7 @@ public class ConcreteClass extends Class{
             if(concrete_class_p.is_consolidated){
 
                 for(Method method : concrete_class_p.getMethods().values()){
+
                     if( methods.get( method.getMethod_token().getLexeme() ) == null ) {
                         this.save_method(method);
                     }else{
@@ -218,6 +219,8 @@ public class ConcreteClass extends Class{
                             throw new SemanticException( self_method.getMethod_token(),
                                     "the method "+ method.getMethod_token().getLexeme() +
                                     " was declared with a different signature in "+ class_token.getLexeme() );
+                        else
+                            self_method.setOffset(method.getOffset());
                     }
                 }
 
@@ -236,15 +239,22 @@ public class ConcreteClass extends Class{
                 this.consolidate();
             }
 
+            offsetCIR = SymbolTable.getInstance().getClass(inherit_class_token.getLexeme()).getOffsetCIR();
+            offsetVT = SymbolTable.getInstance().getClass(inherit_class_token.getLexeme()).getOffsetVT();
+
+            this.setMethodsOffset(concrete_class_p);
+            this.setAttributesOffset(concrete_class_p);
+
         }
 
     }
 
     public void statement_check() throws SemanticException {
         SymbolTable.current_class = this;
-        for( Method method : methods.values() )
-            if( method.getAssociated_class().getLexeme().equals(this.class_token.getLexeme()) )
+        for( Method method : methods.values() ) {
+            if (method.getAssociated_class().getLexeme().equals(this.class_token.getLexeme()))
                 method.statement_check();
+        }
     }
 
     private void check_circular_inheritance(ArrayList<ConcreteClass> parent_class) throws SemanticException {
@@ -298,7 +308,7 @@ public class ConcreteClass extends Class{
         SymbolTable.generate(".DATA");
         String VT_labels;
         if(methods_offset.size() != 0) {
-            VT_labels = "VT_" + class_token.getLexeme() + ": DW";
+            VT_labels = "VT_" + class_token.getLexeme() + ": DW ";
             for (int offset = 0; offset < methods_offset.size(); offset++) {
                 Method method = methods_offset.get(offset);
                 VT_labels += method.method_label() + ",";

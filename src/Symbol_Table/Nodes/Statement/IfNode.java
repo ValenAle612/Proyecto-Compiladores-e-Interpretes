@@ -52,6 +52,7 @@ public class IfNode extends StatementNode {
             SymbolTable.generate("BF " + else_label + " ; jumps to the 'else', the condition is false");
             if_statement.generate();
             SymbolTable.generate("JUMP " + out_if_label + " ; skip the 'else'");
+            SymbolTable.generate(else_label+":");
             else_statement.generate();
             SymbolTable.generate(out_if_label + ": NOP");
         }

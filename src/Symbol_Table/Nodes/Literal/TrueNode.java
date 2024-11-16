@@ -23,4 +23,9 @@ public class TrueNode extends BooleanNode {
         SymbolTable.generate("PUSH "+1+" ; push true");
     }
 
+    @Override
+    public Token getToken() {
+        return token;
+    }
+
 }

@@ -10,13 +10,12 @@ public class CaseNode extends StatementNode{
 
     private Token token;
     private OperandNode literal;
+    private Type switch_condition_type;
     private StatementNode statement;
-    Type switch_condition_type;
 
-    public CaseNode(Token token, OperandNode literal, Type switch_condition_type) {
+    public CaseNode(Token token, OperandNode literal) {
         this.token = token;
         this.literal = literal;
-        this.switch_condition_type = switch_condition_type;
     }
 
     public void setStatement(StatementNode statement){
@@ -25,6 +24,14 @@ public class CaseNode extends StatementNode{
 
     public OperandNode getLiteral(){
         return literal;
+    }
+
+    public Token getToken(){
+        return token;
+    }
+
+    public void setSwitch_condition_type(Type type){
+        this.switch_condition_type = type;
     }
 
     @Override

@@ -1,5 +1,6 @@
 package Symbol_Table.Nodes.Expression;
 
+import Lexical_Analyzer.Token;
 import Symbol_Table.Nodes.Access.AccessNode;
 import Symbol_Table.Nodes.Access.ChainedNode;
 import Symbol_Table.SemanticException;
@@ -51,6 +52,21 @@ public class ParentizedExpressionNode extends AccessNode {
     @Override
     public void setChainedNode(ChainedNode chainedNode) {
         this.chainedNode = chainedNode;
+    }
+
+    @Override
+    public Token getToken() {
+        return null;
+    }
+
+    @Override
+    public Type getType() {
+        return type;
+    }
+
+    @Override
+    public void setType(Type type) {
+        this.type = type;
     }
 
 }

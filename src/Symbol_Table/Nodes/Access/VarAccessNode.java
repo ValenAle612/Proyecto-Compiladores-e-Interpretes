@@ -24,6 +24,7 @@ public class VarAccessNode extends AccessNode{
     }
 
     public Type verify() throws SemanticException{
+
         Type variable_type;
         this.localVarNode = null;
 
@@ -159,4 +160,22 @@ public class VarAccessNode extends AccessNode{
 
     }
 
+    @Override
+    public Type getType() {
+        return type;
+    }
+
+    @Override
+    public void setType(Type type) {
+        this.type = type;
+    }
+
+    @Override
+    public Token getToken() {
+        return token;
+    }
+
+    public LocalVarNode getLocalVarNode() {
+        return localVarNode;
+    }
 }

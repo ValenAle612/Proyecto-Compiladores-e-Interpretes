@@ -3,6 +3,7 @@ package Symbol_Table;
 import Lexical_Analyzer.TokenId;
 import Lexical_Analyzer.Token;
 import Symbol_Table.Nodes.Statement.BlockNode;
+import Symbol_Table.Nodes.Statement.LocalVarNode;
 import Symbol_Table.Types.MethodType;
 import Symbol_Table.Types.Type;
 
@@ -19,9 +20,9 @@ public class Method {
     private boolean is_dynamic;
     private Token associated_class;
     private BlockNode blockNode;
+    private List<LocalVarNode> local_variables;
 
     private int offset, parameters_offset;
-    private boolean is_stated_in_class;
 
     public Method(HashMap<String, Parameter> parameters, ArrayList<Parameter> parameters_list, Token method_token, TokenId static_method,
                   MethodType method_type, Token associated_class){
@@ -32,7 +33,7 @@ public class Method {
         this.method_type = method_type;
         this.associated_class = associated_class;
         this.blockNode = new BlockNode();
-        this.is_stated_in_class = true;
+        this.local_variables = new ArrayList<>();
 
         if(static_method != null){
             this.is_dynamic = false;
@@ -180,10 +181,6 @@ public class Method {
 
         return comforming_parameters;
 
-    }
-
-    public boolean is_stated_in_class(Token class_token){
-        return class_token == associated_class;
     }
 
     public void setAssociated_class(Token associated_class){

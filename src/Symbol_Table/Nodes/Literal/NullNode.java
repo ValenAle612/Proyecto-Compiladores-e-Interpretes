@@ -24,4 +24,9 @@ public class NullNode extends OperandNode{
         SymbolTable.generate("PUSH "+0+" ; push null");
     }
 
+    @Override
+    public Token getToken() {
+        return token;
+    }
+
 }

@@ -41,4 +41,9 @@ public class StringNode extends OperandNode {
         SymbolTable.generate("STOREREF "+string.length());
     }
 
+    @Override
+    public Token getToken() {
+        return token;
+    }
+
 }

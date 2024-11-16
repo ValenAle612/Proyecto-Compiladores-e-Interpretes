@@ -121,4 +121,19 @@ public class StaticMethodAccessNode extends AccessNode {
         }
     }
 
+    @Override
+    public Token getToken() {
+        return token;
+    }
+
+    @Override
+    public Type getType() {
+        return type;
+    }
+
+    @Override
+    public void setType(Type type) {
+        this.type = type;
+    }
+
 }

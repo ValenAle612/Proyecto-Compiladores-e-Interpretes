@@ -37,7 +37,7 @@ public class DecAssignmentNode extends AssignmentNode {
     public void generate() {
         left_node.generate();
         expressionNode.generate();
-        SymbolTable.instruction_list.add("SUB");
+        SymbolTable.instruction_list.add("SUB ; DecAssignmentNode");
         left_node.set_as_left_side();
         left_node.generate();
     }

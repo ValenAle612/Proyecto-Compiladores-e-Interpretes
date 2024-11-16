@@ -62,4 +62,18 @@ public class BuilderAccessNode extends AccessNode{
         SymbolTable.generate("STOREREF 0");
     }
 
+    @Override
+    public Type getType() {
+        return type;
+    }
+
+    @Override
+    public void setType(Type type) {
+        this.type = type;
+    }
+
+    @Override
+    public Token getToken() {
+        return token;
+    }
 }

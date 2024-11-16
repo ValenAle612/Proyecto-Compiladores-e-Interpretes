@@ -1,0 +1,339 @@
+.CODE
+PUSH simple_heap_init
+CALL
+PUSH Initmain
+CALL
+HALT
+
+simple_heap_init:
+RET 0
+
+simple_malloc:
+LOADFP ; Unit initialization
+LOADSP
+STOREFP ; Ends RA initialization
+LOADHL ; hl
+DUP ; hl
+PUSH 1 ; 1
+ADD ; hl + 1
+STORE 4 ; Stores result (pointer to the base of the block)
+LOAD 3 ; Loads the number of cells to allocate (parameter)
+ADD
+STOREHL ; Moves the heap limit (hl)
+STOREFP
+RET 1 ; Returns, removing the parameter
+
+.DATA
+VT_A: DW Am1int,Am2intint,Am3,Am4
+.CODE
+Am1int:
+LOADFP
+LOADSP
+STOREFP
+PUSH 5 ; push integer
+LOAD 3
+SWAP
+STOREREF 1
+PUSH 'd' ; push character
+LOAD 3
+SWAP
+STOREREF 2
+RMEM 1 ; pointer to the String at .HEAP
+PUSH 5
+PUSH simple_malloc
+CALL
+DUP ; duplicate the reference at the beggining of the String since STOREREF consumes it
+PUSH 'h' 
+STOREREF 0 ; save the pushed letter
+DUP ; duplicate the reference at the beggining of the String since STOREREF consumes it
+PUSH 'o' 
+STOREREF 1 ; save the pushed letter
+DUP ; duplicate the reference at the beggining of the String since STOREREF consumes it
+PUSH 'l' 
+STOREREF 2 ; save the pushed letter
+DUP ; duplicate the reference at the beggining of the String since STOREREF consumes it
+PUSH 'a' 
+STOREREF 3 ; save the pushed letter
+DUP ; duplicate the reference at the beggining of the String since STOREREF consumes it
+PUSH 0 ; push the terminator
+STOREREF 4
+LOAD 3
+SWAP
+STOREREF 3
+PUSH 0 ; push false
+LOAD 3
+SWAP
+STOREREF 4
+label_while2:
+LOAD 3
+LOADREF 4
+NOT ; Unary negation
+BF label_end_while2
+LOAD 3
+LOADREF 1
+LOAD 4 ; parameter p1
+ADD
+LOAD 3
+SWAP
+STOREREF 1
+LOAD 4 ; parameter p1
+PUSH 0 ; push integer
+NE
+BF out_if_label4 ; jumps out of the 'if', if the condition is false
+PUSH 1 ; push true
+LOAD 3
+SWAP
+STOREREF 4
+FMEM 0 ; free space for local variables, 0 memory spaces were freed 
+out_if_label4: NOP 
+FMEM 0 ; free space for local variables, 0 memory spaces were freed 
+JUMP label_while2
+label_end_while2: NOP
+FMEM 0
+LOAD 3
+LOADREF 1
+STORE 5
+STOREFP
+RET 2
+FMEM 0 ; free space for local variables, 0 memory spaces were freed 
+STOREFP
+RET 2
+
+Am2intint:
+LOADFP
+LOADSP
+STOREFP
+FMEM 0
+LOAD 4 ; parameter p1
+LOAD 5 ; parameter p2
+ADD
+STORE 6
+STOREFP
+RET 3
+FMEM 0 ; free space for local variables, 0 memory spaces were freed 
+STOREFP
+RET 3
+
+Am3:
+LOADFP
+LOADSP
+STOREFP
+RMEM 1; Saving space for local variable v1
+PUSH 1 ; push integer
+STORE 0
+label_while3:
+LOAD 0 ; local variable v1
+PUSH 7 ; push integer
+LT
+BF label_end_while3
+LOAD 0 ; local variable v1
+LOAD 0 ; local variable v1
+ADD
+STORE 0 ; local variable v1
+FMEM 0 ; free space for local variables, 0 memory spaces were freed 
+JUMP label_while3
+label_end_while3: NOP
+LOAD 0 ; local variable v1
+PUSH SystemprintIlnint
+CALL
+FMEM 1
+LOAD 0 ; local variable v1
+STORE 4
+STOREFP
+RET 1
+FMEM 1 ; free space for local variables, 1 memory spaces were freed 
+STOREFP
+RET 1
+
+Am4:
+LOADFP
+LOADSP
+STOREFP
+FMEM 0
+RMEM 1
+PUSH 1
+PUSH simple_malloc
+CALL
+DUP
+PUSH VT_B
+STOREREF 0
+STORE 4
+STOREFP
+RET 1
+FMEM 0 ; free space for local variables, 0 memory spaces were freed 
+STOREFP
+RET 1
+
+.DATA
+VT_Init: NOP
+.CODE
+Initmain:
+LOADFP
+LOADSP
+STOREFP
+RMEM 1; Saving space for local variable a
+RMEM 1
+PUSH 6
+PUSH simple_malloc
+CALL
+DUP
+PUSH VT_A
+STOREREF 0
+STORE 0
+RMEM 1; Saving space for local variable v1
+LOAD 0 ; local variable a
+RMEM 1
+SWAP
+PUSH 1 ; push integer
+SWAP
+DUP
+LOADREF 0
+LOADREF 0
+CALL
+STORE -1
+RMEM 1; Saving space for local variable v2
+LOAD 0 ; local variable a
+RMEM 1
+SWAP
+LOAD 0 ; local variable a
+RMEM 1
+SWAP
+DUP
+LOADREF 0
+LOADREF 2
+CALL
+SWAP
+LOAD -1 ; local variable v1
+SWAP
+DUP
+LOADREF 0
+LOADREF 1
+CALL
+STORE -2
+LOAD -2 ; local variable v2
+PUSH SystemprintIlnint
+CALL
+RMEM 1; Saving space for local variable v3
+LOAD 0 ; local variable a
+LOADREF 4
+STORE -3
+FMEM 4 ; free space for local variables, 4 memory spaces were freed 
+STOREFP
+RET 0
+
+.DATA
+VT_B: NOP
+.CODE
+.DATA
+VT_Object: NOP
+.CODE
+ObjectdebugPrintint:
+LOADFP
+LOADSP
+STOREFP
+LOAD 3
+IPRINT
+STOREFP
+RET 1 ; Returns deleting the parameter
+
+.DATA
+VT_String: NOP
+.CODE
+.DATA
+VT_System: NOP
+.CODE
+SystemprintCchar:
+LOADFP
+LOADSP
+STOREFP
+LOAD 3
+CPRINT
+STOREFP
+RET 1 ; Returns deleting the parameter
+
+SystemprintSString:
+LOADFP
+LOADSP
+STOREFP
+LOAD 3
+SPRINT
+STOREFP
+RET 1 ; Returns deleting the parameter
+
+Systemprintln:
+LOADFP
+LOADSP
+STOREFP
+PRNLN
+STOREFP
+RET 0 ; No parameters
+
+SystemprintClnchar:
+LOADFP
+LOADSP
+STOREFP
+LOAD 3
+CPRINT
+PRNLN
+STOREFP
+RET 1 ; Returns deleting the parameter
+
+SystemprintSlnString:
+LOADFP
+LOADSP
+STOREFP
+LOAD 3
+SPRINT
+PRNLN
+STOREFP
+RET 1 ; Returns deleting the parameter
+
+Systemread:
+LOADFP
+LOADSP
+STOREFP
+READ   ; read the integer 
+PUSH 48
+SUB
+STORE 3
+STOREFP
+RET 0 ; No parameters
+
+SystemprintBboolean:
+LOADFP
+LOADSP
+STOREFP
+LOAD 3
+BPRINT
+STOREFP
+RET 1 ; Returns deleting the parameter
+
+SystemprintIlnint:
+LOADFP
+LOADSP
+STOREFP
+LOAD 3
+IPRINT
+PRNLN
+STOREFP
+RET 1 ; Returns deleting the parameter
+
+SystemprintIint:
+LOADFP
+LOADSP
+STOREFP
+LOAD 3
+IPRINT
+STOREFP
+RET 1 ; Returns deleting the parameter
+
+SystemprintBlnboolean:
+LOADFP
+LOADSP
+STOREFP
+LOAD 3
+BPRINT
+PRNLN
+STOREFP
+RET 1 ; Returns deleting the parameter
+

@@ -5,7 +5,6 @@ import Lexical_Analyzer.LexicalException;
 import Lexical_Analyzer.Token;
 import Lexical_Analyzer.TokenId;
 import Symbol_Table.*;
-import Symbol_Table.Class;
 import Symbol_Table.Nodes.Access.*;
 import Symbol_Table.Nodes.Expression.*;
 import Symbol_Table.Nodes.Literal.*;
@@ -33,11 +32,6 @@ public class SyntaxAnalyzer {
             TokenId.kw_switch, TokenId.ps_openBrace));
     private final Set<TokenId> access_tokens = new HashSet<>(Set.of(TokenId.kw_this, TokenId.kw_new, TokenId.class_id,
             TokenId.ps_openParenthesis, TokenId.method_var_id));
-    private final Set<TokenId> unaryExpressions_tokens = new HashSet<>(Set.of(TokenId.op_add, TokenId.op_substract,
-            TokenId.op_not, TokenId.kw_null, TokenId.kw_true,
-            TokenId.kw_false, TokenId.literal_integer, TokenId.literal_char,
-            TokenId.literal_String, TokenId.kw_this, TokenId.method_var_id,
-            TokenId.kw_new, TokenId.class_id, TokenId.ps_openParenthesis ));
     private final Set<TokenId> operand_tokens = new HashSet<>(Set.of(TokenId.kw_null, TokenId.kw_true, TokenId.kw_false,
             TokenId.literal_integer, TokenId.literal_char,
             TokenId.literal_String, TokenId.kw_this,
@@ -71,9 +65,6 @@ public class SyntaxAnalyzer {
 
     private final Set<TokenId> assigmentType_tokens = new HashSet<>(Set.of(TokenId.op_assignment, TokenId.op_assignmentAdition,
             TokenId.op_assignmentSubstraction));
-    private final Set<TokenId> attribute_tokens = new HashSet<>(Set.of(TokenId.kw_public, TokenId.kw_private));
-    private final Set<TokenId> method_tokens =  new HashSet<>(Set.of(TokenId.kw_static, TokenId.kw_void, TokenId.class_id,
-            TokenId.kw_int, TokenId.kw_char, TokenId.kw_boolean));
 
     public SyntaxAnalyzer( LexicalAnalyzer lexicalAnalyzer ) throws LexicalException, SyntaxException, IOException, SemanticException {
         this.lexicalAnalyzer = lexicalAnalyzer;
@@ -191,7 +182,7 @@ public class SyntaxAnalyzer {
         }
     }
 
-    private TokenId static_optional() throws LexicalException, SyntaxException, SemanticException, IOException {
+    private TokenId static_optional() throws LexicalException, SyntaxException, IOException {
         if(TokenId.kw_static == currentToken.getTokenType()){
             match("static", TokenId.kw_static);
             return TokenId.kw_static;
@@ -200,7 +191,7 @@ public class SyntaxAnalyzer {
         }
     }
 
-    private Type method_var_type() throws LexicalException, SyntaxException, SemanticException, IOException {
+    private Type method_var_type() throws LexicalException, SyntaxException, IOException {
         if(type_tokens.contains(currentToken.getTokenType())){
             return type();
         }else if(TokenId.kw_void == currentToken.getTokenType()){
@@ -245,12 +236,13 @@ public class SyntaxAnalyzer {
     private void method(Token token, TokenId static_token, Type type) throws LexicalException, SyntaxException, IOException, SemanticException {
         method_header(token, static_token, type);
         Method method = SymbolTable.current_method;
+        method.setAssociated_class(SymbolTable.current_class.getToken());
         BlockNode block = block();
         method.insert_block(block);
     }
 
     private void method_header(Token token, TokenId static_token, Type type) throws LexicalException, SyntaxException, IOException, SemanticException {
-        Method method = new Method(new HashMap<String, Parameter>(), new ArrayList<Parameter>(), token,
+        Method method = new Method(new HashMap<>(), new ArrayList<>(), token,
                 static_token, type, SymbolTable.current_class.getToken());
         SymbolTable.current_method = method;
         formal_arguments();
@@ -372,10 +364,7 @@ public class SyntaxAnalyzer {
             return statementNode;
         }else if ( TokenId.ps_openBrace == currentToken.getTokenType() ) {
             return block();
-        /*} else if ( unaryExpressions_tokens.contains( currentToken.getTokenType() )){
-            unary_expression();
-            recursive_expression();*/
-        } else
+        }else
             throw new SyntaxException("a statement", currentToken);
 
     }
@@ -465,6 +454,22 @@ public class SyntaxAnalyzer {
             return primaryNode;
         }else
             throw new SyntaxException("an accesss", currentToken);
+    }
+
+    private VarAccessNode switch_access() throws LexicalException, SyntaxException, IOException {
+        if( primary_tokens.contains( currentToken.getTokenType() ) ){
+            return switch_var();
+        }else
+            throw new SyntaxException("an accesss", currentToken);
+    }
+
+    private VarAccessNode switch_var() throws LexicalException, SyntaxException, IOException {
+        if ( TokenId.method_var_id == currentToken.getTokenType() ){
+            Token token = currentToken;
+            match("method or variable identifier", currentToken.getTokenType() );
+            return new VarAccessNode(token);
+        } else
+            throw new SyntaxException("a variable", currentToken);
     }
 
     private AccessNode primary() throws LexicalException, SyntaxException, IOException {
@@ -563,7 +568,7 @@ public class SyntaxAnalyzer {
         if( expressionStart_token.contains(currentToken.getTokenType()) ){
             return expressions_as_arguments();
         }else{
-            return new ArrayList<ExpressionNode>();
+            return new ArrayList<>();
         }
     }
 
@@ -571,7 +576,7 @@ public class SyntaxAnalyzer {
         if(expression_tokens.contains( currentToken.getTokenType() ) ){
             ExpressionNode expressionNode = expression_parsing();
             List<ExpressionNode> expressionNodeList = expressions_as_arguments_factorized();
-            expressionNodeList.add(0,expressionNode);
+            expressionNodeList.addFirst(expressionNode);
             return expressionNodeList;
         }else
             throw new SyntaxException("an expression list", currentToken);
@@ -583,7 +588,7 @@ public class SyntaxAnalyzer {
             match(",", TokenId.ps_comma);
             return expressions_as_arguments();
         }else{
-            return new ArrayList<ExpressionNode>();
+            return new ArrayList<>();
         }
     }
 
@@ -592,8 +597,7 @@ public class SyntaxAnalyzer {
             BinaryExpressionNode binaryExpressionNode = binary_operator();
             ExpressionNode right_side = unary_expression();
             binaryExpressionNode.create_binary_expression(left_side, right_side);
-            ExpressionNode expression = recursive_expression(binaryExpressionNode);
-            return expression;
+            return recursive_expression(binaryExpressionNode);
         }else{
             return left_side;
         }
@@ -690,21 +694,17 @@ public class SyntaxAnalyzer {
         ExpressionNode expressionNode = expression_parsing();
         match(")", TokenId.ps_closeParenthesis);
         StatementNode statementNode = statement();
-        WhileNode whileNode = new WhileNode(token, expressionNode, statementNode);
-        return whileNode;
+        return new WhileNode(token, expressionNode, statementNode);
     }
 
     private SwitchNode switch_statement() throws LexicalException, SyntaxException, SemanticException, IOException {
         match("switch", TokenId.kw_switch);
         match("(", TokenId.ps_openParenthesis);
-        Token token = currentToken;
-        LocalVarNode localVarNode = new LocalVarNode(token);
-        localVarNode.set_type(get_type_of_local_var(localVarNode));
-        match("method or variable identifier", TokenId.method_var_id);
+        VarAccessNode switch_var = switch_access();
         match(")", TokenId.ps_closeParenthesis);
         match("{", TokenId.ps_openBrace);
-        SwitchNode switchNode = new SwitchNode(localVarNode);
-        List<CaseNode> cases = switch_list_statement(localVarNode.get_type());
+        SwitchNode switchNode = new SwitchNode(switch_var);
+        List<CaseNode> cases = switch_list_statement();
         switchNode.setCases(cases);
         StatementNode default_case = default_case_optional_statement();
         switchNode.setDefaultCase(default_case);
@@ -712,36 +712,20 @@ public class SyntaxAnalyzer {
         return switchNode;
     }
 
-    private Type get_type_of_local_var(LocalVarNode localVarNode) throws LexicalException, SyntaxException, IOException {
-        Class current_class = SymbolTable.current_class;
-        Method current_method = SymbolTable.current_method;
-
-        Attribute attribute_var = current_class.getAttribute(localVarNode.getToken().getLexeme());
-        Parameter parameter_var = current_method.getParameter(localVarNode.getToken().getLexeme());
-
-        if(attribute_var != null) {
-            return attribute_var.get_type();
-        }else if(parameter_var != null){
-            return parameter_var.get_type();
-        }else{
-            return null;
-        }
-    }
-
-    private List<CaseNode> switch_list_statement(Type switch_condition_type) throws LexicalException, SyntaxException, SemanticException, IOException {
+    private List<CaseNode> switch_list_statement() throws LexicalException, SyntaxException, SemanticException, IOException {
         if( switch_tokens.contains( currentToken.getTokenType() ) ) {
-            return switch_list_statement_parsing(switch_condition_type);
+            return switch_list_statement_parsing();
         }else{
             return new ArrayList<>();
         }
     }
 
-    private List<CaseNode> switch_list_statement_parsing(Type switch_condition_type) throws LexicalException, SyntaxException, SemanticException, IOException {
+    private List<CaseNode> switch_list_statement_parsing() throws LexicalException, SyntaxException, SemanticException, IOException {
         if( switch_tokens.contains( currentToken.getTokenType() ) ) {
             List<CaseNode> cases = new ArrayList<>();
 
             while(currentToken.getTokenType() == TokenId.kw_case){
-                CaseNode case_node = switch_list_statement_parsing_recursive(switch_condition_type);
+                CaseNode case_node = switch_list_statement_parsing_recursive();
                 cases.add(case_node);
             }
 
@@ -752,12 +736,12 @@ public class SyntaxAnalyzer {
         }
     }
 
-    private CaseNode switch_list_statement_parsing_recursive(Type switch_condition_type) throws LexicalException, SyntaxException, SemanticException, IOException {
+    private CaseNode switch_list_statement_parsing_recursive() throws LexicalException, SyntaxException, SemanticException, IOException {
         match("case", TokenId.kw_case);
         Token token = currentToken;
         OperandNode literal = literal();
         match(":", TokenId.ps_colon);
-        CaseNode caseNode = new CaseNode(token, literal, switch_condition_type);
+        CaseNode caseNode = new CaseNode(token, literal);
         StatementNode statement = case_optional_statement();
         caseNode.setStatement(statement);
         return caseNode;
@@ -798,10 +782,10 @@ public class SyntaxAnalyzer {
             return new ExpAssignmentNode(token, accessNode);
         } else if ( TokenId.op_assignmentAdition == currentToken.getTokenType() ) {
             match("+=", TokenId.op_assignmentAdition);
-            return new DecAssignmentNode(token, accessNode);
+            return new IncAssignmentNode(token, accessNode);
         } else if ( TokenId.op_assignmentSubstraction == currentToken.getTokenType() ) {
             match("-=", TokenId.op_assignmentSubstraction);
-            return new IncAssignmentNode(token, accessNode);
+            return new DecAssignmentNode(token, accessNode);
         }else
             throw new SyntaxException(token.getLexeme(), token);
     }

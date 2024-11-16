@@ -24,4 +24,9 @@ public class IntNode extends OperandNode {
         SymbolTable.generate("PUSH "+token.getLexeme()+" ; push integer");
     }
 
+    @Override
+    public Token getToken() {
+        return token;
+    }
+
 }

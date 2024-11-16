@@ -24,4 +24,8 @@ public class CharNode extends OperandNode {
         SymbolTable.generate("PUSH "+token.getLexeme()+" ; push character");
     }
 
+    @Override
+    public Token getToken() {
+        return token;
+    }
 }
